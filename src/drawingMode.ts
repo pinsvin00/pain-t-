@@ -1,6 +1,6 @@
 
 
-export enum DrawingModes { 
+export enum DrawingMode { 
     LINE,
     BRUSH,
     CIRLCE,

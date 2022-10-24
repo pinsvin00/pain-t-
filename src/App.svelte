@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { Dragger } from './Dragger';
-  import { DrawingModes } from './drawing_modes';
+  import { DrawingMode } from './drawingMode';
   import { Paint } from './paint';
 
   let paint : Paint;
@@ -9,13 +9,22 @@
 
   onMount(() => {
     paint = new Paint();
-    dragger = new Dragger("canvasDragger", "canvas")
+    dragger = new Dragger("canvasDragger", "canvas");
+
+
+    const render = () => {
+      paint.render();
+      window.requestAnimationFrame(render);
+    }
+    window.requestAnimationFrame(render);
+
   })
 
-  const select = (mode : DrawingModes) => {
-    paint.mode = mode;
-
+  const select = (mode : DrawingMode) => {
+    paint.setDrawingMode(mode);
   }
+
+
 
 
 
@@ -23,10 +32,10 @@
 
 
 <div>
-  <button on:click={() => {select(DrawingModes.LINE)}}>Linia</button>
-  <button on:click={() => {select(DrawingModes.RECTANGLE)}}>[]</button>
-  <button on:click={() => {select(DrawingModes.CIRLCE)}}>()</button>
-  <button on:click={() => {select(DrawingModes.BRUSH)}}>brush</button>
+  <button on:click={() => {select(DrawingMode.LINE)}}>Linia</button>
+  <button on:click={() => {select(DrawingMode.RECTANGLE)}}>[]</button>
+  <button on:click={() => {select(DrawingMode.CIRLCE)}}>()</button>
+  <button on:click={() => {select(DrawingMode.BRUSH)}}>brush</button>
   
 </div>
 
