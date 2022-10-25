@@ -1,6 +1,4 @@
 import { Circle, DrawOperation, Operation } from "../operation";
-import type { Painter } from "../paint";
-import { Vector2 } from "../utils";
 import { OperationHandler } from "./operationHandler";
 
 
@@ -32,13 +30,13 @@ export class DrawingHandler extends OperationHandler {
         const pos = this.transformer.transform(e);
         const lastPos = this.transformer.transform(this.lastMouseEvent);
 
-        const STEPS = 20;
+        const STEPS = 50;
 
         const step = pos.sub(lastPos).divFac(STEPS); 
         let currPos = lastPos.cpy();
 
         for (let i = 0 ; i < STEPS ; i++) {
-            let circle = new Circle(currPos, 2.0, 'black');
+            let circle = new Circle(currPos, this.thickness, this.color);
             this.generatedOperation.circles.push(circle);
             currPos = currPos.add(step); 
         }

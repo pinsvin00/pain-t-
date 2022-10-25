@@ -26,11 +26,60 @@ export class Circle {
     }
 }
 
+export class LineOperation extends Operation {
+    startPoint: Vector2;
+    endPoint: Vector2;
+
+    constructor(start: Vector2) {
+        super();
+        this.startPoint = start;
+        this.endPoint = null;
+    }
+
+    draw(painter: Painter) {
+        if(!this.startPoint || !this.endPoint) return;
+        painter.line(this.startPoint, this.endPoint, 2.0);
+    }
+}
+
+export class RectOperation extends Operation {
+    startPoint: Vector2;
+    endPoint: Vector2;
+
+    constructor(start: Vector2) {
+        super();
+        this.startPoint = start;
+        this.endPoint = null;
+    }
+
+    draw(painter: Painter) {
+        if(!this.startPoint || !this.endPoint) return;
+        painter.rect(this.startPoint, this.endPoint, 2.0);
+    }
+}
+
+export class CircleOperation extends Operation {
+    startPoint: Vector2;
+    radius: number;
+
+    fill: boolean;
+    thickness : number;
+
+    constructor(start: Vector2) {
+        super();
+        this.startPoint = start;
+        this.radius = 1;
+    }
+
+    draw(painter: Painter) {
+        painter.circle(this.startPoint, this.radius, this.fill);
+    }
+}
+
 export class DrawOperation extends Operation { 
     circles : Array<Circle> = [];
 
     draw(painter: Painter) {
-        console.log("sus!")
         this.circles.forEach(el => {
             painter.color = el.color;
             painter.circle(el.position, el.radius, el.isFilled);

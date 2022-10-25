@@ -3,6 +3,7 @@
   import { Dragger } from './Dragger';
   import { DrawingMode } from './drawingMode';
   import { Paint } from './paint';
+  import './app.css'
 
   let paint : Paint;
   let dragger : Dragger;
@@ -26,21 +27,48 @@
 
 
 
-
-
 </script>
 
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    color: pink;
+  }
+
+  .dragger:hover {
+    cursor: pointer;
+    color: red;
+  }
+
+  canvas:hover { 
+    cursor : crosshair;
+  }
+
+</style>
 
 <div>
   <button on:click={() => {select(DrawingMode.LINE)}}>Linia</button>
-  <button on:click={() => {select(DrawingMode.RECTANGLE)}}>[]</button>
-  <button on:click={() => {select(DrawingMode.CIRLCE)}}>()</button>
-  <button on:click={() => {select(DrawingMode.BRUSH)}}>brush</button>
+  <button on:click={() => {select(DrawingMode.RECTANGLE)}}>Prostokąt</button>
+  <button on:click={() => {select(DrawingMode.CIRLCE)}}>Koło</button>
+  <button on:click={() => {select(DrawingMode.BRUSH)}}>brush</button> 
+  <br>
+  {#if paint}
+      <span>Thiccness : {paint.handler.thickness}</span>
+      <input type="range" min="1" max="40" bind:value={paint.handler.thickness}>
+      <span>Fill(?)</span>
+      <input type="checkbox" bind:value={paint.handler.fill}  />
+      <span>kolorek</span>
+      <input type="color" bind:value={paint.handler.color}>
+  {/if}
+
+
+
   
 </div>
 
 <div>
   <canvas id="canvas" width="500" height="500" style="border: 1px solid green"></canvas>
-  <button id="canvasDragger" class="dragger" style="position: absolute; top: 550px; left: 550px;">-</button>
+  <button id="canvasDragger" class="dragger" style="position: absolute; top: 500px; left: 500px;">-</button>
 </div>
 

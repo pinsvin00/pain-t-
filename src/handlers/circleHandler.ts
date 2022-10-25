@@ -1,20 +1,17 @@
-import { LineOperation } from "../operation";
+import { CircleOperation, LineOperation } from "../operation";
 import type { Vector2 } from "../utils";
-import { DrawingHandler } from "./drawingHandler";
 import { OperationHandler } from "./operationHandler";
 
-
-
-export class LineHandler extends OperationHandler {
+export class CircleHandler extends OperationHandler {
 
     startPoint: Vector2;
-    operation: LineOperation;
+    operation: CircleOperation;
 
     onPress(e: MouseEvent) : void {
         super.onPress(e);
         
         this.startPoint = this.transformer.transform(e);
-        this.operation = new LineOperation(this.startPoint)
+        this.operation = new CircleOperation(this.startPoint)
         this.operations.push(
             this.operation
         )
@@ -25,7 +22,8 @@ export class LineHandler extends OperationHandler {
             return;
         }
         const pos = this.transformer.transform(e);
-        this.operation.endPoint = pos;
+        const dis = this.startPoint.dis(pos);
+        this.operation.radius = dis;
     }
 
     onRelease(e: MouseEvent) {

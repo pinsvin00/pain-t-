@@ -7,6 +7,12 @@ export class OperationHandler {
     
     transformer: MouseTransformer;
     mousePressed = false;
+
+    thickness: number = 2.0;
+    fill : boolean = false;
+    color: string = 'black';
+    proportional  = false;
+
     lastMouseEvent : MouseEvent;
     paint: Painter;
     operations: Array<Operation>;
