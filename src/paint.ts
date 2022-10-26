@@ -1,4 +1,5 @@
 import { DrawingMode } from "./drawingMode";
+import { BucketHandler } from "./handlers/bucketHandler";
 import { CircleHandler } from "./handlers/circleHandler";
 import { DrawingHandler } from "./handlers/drawingHandler";
 import { LineHandler } from "./handlers/lineHandler";
@@ -12,6 +13,7 @@ export class Painter {
     canvas: HTMLCanvasElement;
     color = 'black';
     fill = false;
+    draw = false;
     thickness  = 2.0;
 
 
@@ -19,6 +21,11 @@ export class Painter {
         this.ctx.fillStyle = this.color;
         this.ctx.strokeStyle = this.color;
         this.ctx.lineWidth = this.thickness;
+    }
+
+    show() {
+        const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height).data;
+        console.log(imageData);
     }
 
     circle(pos: Vector2, radius: number, fill = true) {
@@ -67,11 +74,17 @@ export class Painter {
         this.ctx.stroke();
     }
 
+    async dot(start: Vector2) {
+
+        this.reloadCanvasData();
+        this.ctx.fillRect(start.x, start.y, 1, 1);
+    }
+
 }
 
 
 
-export class MaciekBednarz { 
+export class Paint { 
     canvas  : HTMLCanvasElement;
     ctx : CanvasRenderingContext2D;
     mouseTransformer : MouseTransformer;
@@ -92,9 +105,12 @@ export class MaciekBednarz {
 
 
     render() {
+        if(this.painter.draw) return;
+
         this.ctx.clearRect(
             0,0, this.canvas.width, this.canvas.height
         )
+
         this.operations.forEach(el => {
             el.draw(this.painter);
         });
@@ -107,7 +123,7 @@ export class MaciekBednarz {
         map[DrawingMode.RECTANGLE] = new RectHandler();
         map[DrawingMode.LINE] = new LineHandler();
         map[DrawingMode.CIRLCE] = new CircleHandler();
-        map[DrawingMode.BUCKET] = new CircleHandler();
+        map[DrawingMode.BUCKET] = new BucketHandler();
         return map[mode];
     }
 

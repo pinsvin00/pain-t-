@@ -6,7 +6,7 @@ export class MouseTransformer {
 
     transform(e: MouseEvent) : Vector2 {
         const rect = this.relativeTo.getBoundingClientRect();
-        return new Vector2(e.clientX - rect.left, e.clientY -  rect.top);
+        return new Vector2(Math.floor(e.clientX - rect.left), Math.floor(e.clientY -  rect.top));
 
     }
 }

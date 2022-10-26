@@ -53,10 +53,13 @@
   <button on:click={() => {select(DrawingMode.CIRLCE)}}>Koło</button>
   <button on:click={() => {select(DrawingMode.BRUSH)}}>brush</button> 
   <button on:click={() => {select(DrawingMode.BUCKET)}}>Fill</button> 
+  <button on:click={() => {
+    paint.painter.show();
+  }}></button>
   <br>
   {#if paint}
       <span>Thiccness : {paint.handler.thickness}</span>
-      <input type="range" min="1" max="40" bind:value={paint.handler.thickness}>
+      <input type="range" min="1" max="10" bind:value={paint.handler.thickness}>
       <span>Fill(?)</span>
       <input type="checkbox" bind:checked={paint.handler.fill}  />
       <span>kolorek</span>
@@ -64,7 +67,7 @@
   {/if}
 
 
-  <a id="dummy" style="visibility:hidden;"></a>
+  <a id="dummy" style="visibility:hidden;">--</a>
   
 </div>
 

@@ -22,8 +22,8 @@ export class Dragger {
         document.addEventListener('mousemove',  (e: MouseEvent) => {
             if(!this.active) return;
 
-            this.subject.setAttribute("width", e.clientX + "px");
-            this.subject.setAttribute("height", e.clientY + "px");
+            this.subject.setAttribute("width", e.clientX - 20 + "px");
+            this.subject.setAttribute("height", e.clientY  - 20 + "px");
 
             this.element.style.setProperty("left", e.clientX + "px");
             this.element.style.setProperty("top", e.clientY + "px");
