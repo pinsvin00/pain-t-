@@ -10,30 +10,62 @@ import { MouseTransformer, Vector2 } from "./utils";
 export class Painter {
     ctx: CanvasRenderingContext2D;
     color = 'black';
+    fill = false;
+    thickness  = 2.0;
 
-    circle(pos: Vector2, radius: number, fill = true) {
-        this.ctx.beginPath();
-        this.ctx.arc(pos.x, pos.y, radius, 0, 2 * Math.PI);
+
+    reloadCanvasData() {
         this.ctx.fillStyle = this.color;
         this.ctx.strokeStyle = this.color;
-        this.ctx.fill();
+        this.ctx.lineWidth = this.thickness;
+    }
+
+    circle(pos: Vector2, radius: number, fill = true) {
+        this.reloadCanvasData();
+
+        this.ctx.beginPath();
+        this.ctx.arc(pos.x, pos.y, radius, 0, 2 * Math.PI);
+
+        if(this.fill) {
+            this.ctx.fill();
+        }
+
         this.ctx.stroke();
     }
 
+    ellipse(pos: Vector2, radius: Vector2, fill = false) {
+
+        this.reloadCanvasData();
+
+        this.ctx.beginPath();
+        this.ctx.ellipse(pos.x, pos.y, radius.x, radius.y, 0, 0, 2 * Math.PI);
+        if(this.fill) {
+            this.ctx.fill();
+        }
+        this.ctx.stroke();
+    }   
+
     line(start: Vector2, end: Vector2, thickness: number) {
+
+        this.reloadCanvasData();
+        
         this.ctx.beginPath();
         this.ctx.moveTo(start.x, start.y);
-        this.ctx.fillStyle = this.color;
         this.ctx.lineTo(end.x, end.y);
         this.ctx.stroke();
     }
 
     rect(start: Vector2, end: Vector2, thickness: number, fill = false) {
-        this.ctx.beginPath();
 
+        this.reloadCanvasData();
+
+        this.ctx.beginPath();
         const size = end.sub(start); 
 
         this.ctx.rect(start.x, start.y, size.x, size.y);
+        if(this.fill) {
+            this.ctx.fill();
+        }
         this.ctx.stroke();
     }
 
@@ -84,27 +116,46 @@ export class Paint {
     setDrawingMode(mode: DrawingMode) {
         const thickness = this.handler.thickness;
         const fill = this.handler.fill;
+        const color = this.handler.color;
+        
         this.handler = this.provideHandler(mode);
         this.handler.operations = this.operations;
         this.handler.fill = fill;
+        this.handler.color = color;
         this.handler.thickness = thickness;
 
     }
 
+
+    //TODO linia pozioma
+    //dynamiczna ilosc krokow interpolacji
+
     handleKeyDown(e: KeyboardEvent) {
+
+
         if(e.key === 'Control') {
             this.controlPressed = true;
         }
         if (e.key === 'Shift') {
+            console.log("shift pressed")
             this.handler.proportional = true;
         }
 
         if(e.key.toUpperCase() === 'Z' && this.controlPressed) {
             this.operations.pop();
         }
+        if(e.key.toUpperCase() === 'S' && this.controlPressed) {
+            e.preventDefault();
+            const dummy = document.getElementById("dummy");
+            const data = this.canvas.toDataURL("image/png").replace("image/png", "image/octet-stream")
+            dummy.setAttribute("href", data);
+            dummy.setAttribute("download", "image.png")
+            dummy.click();
+        }
     }
 
     handleKeyUp(e: KeyboardEvent) {
+        console.log(e.key, "Key released")
         if(e.key === 'Control') {
             this.controlPressed = false;
         }
@@ -137,6 +188,7 @@ export class Paint {
         this.canvas.addEventListener("mousedown", this.pressHandler);
         this.canvas.addEventListener('mouseup', this.releaseHandler );
         window.addEventListener('keydown', this.handleKeyDown.bind(this));
+        window.addEventListener('keyup', this.handleKeyUp.bind(this));
 
         this.painter = new Painter();
         this.painter.ctx = this.ctx;

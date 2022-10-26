@@ -25,6 +25,8 @@
     paint.setDrawingMode(mode);
   }
 
+  let lulz = true;
+
 
 
 </script>
@@ -57,13 +59,13 @@
       <span>Thiccness : {paint.handler.thickness}</span>
       <input type="range" min="1" max="40" bind:value={paint.handler.thickness}>
       <span>Fill(?)</span>
-      <input type="checkbox" bind:value={paint.handler.fill}  />
+      <input type="checkbox" bind:checked={paint.handler.fill}  />
       <span>kolorek</span>
       <input type="color" bind:value={paint.handler.color}>
   {/if}
 
 
-
+  <a id="dummy" style="visibility:hidden;"></a>
   
 </div>
 
