@@ -34,6 +34,16 @@ export class Circle {
     }
 }
 
+export class Bucket extends Operation {
+    origin: Vector2;
+
+    draw(painter: Painter) {
+        const imageData = painter.ctx.getImageData(painter.canvas.width, painter.canvas.height, 0, 0);
+        imageData.data
+
+    }
+}
+
 export class LineOperation extends Operation {
     startPoint: Vector2;
     endPoint: Vector2;

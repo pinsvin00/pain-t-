@@ -9,6 +9,7 @@ import { MouseTransformer, Vector2 } from "./utils";
 
 export class Painter {
     ctx: CanvasRenderingContext2D;
+    canvas: HTMLCanvasElement;
     color = 'black';
     fill = false;
     thickness  = 2.0;
@@ -25,10 +26,7 @@ export class Painter {
 
         this.ctx.beginPath();
         this.ctx.arc(pos.x, pos.y, radius, 0, 2 * Math.PI);
-
-        if(this.fill) {
-            this.ctx.fill();
-        }
+        this.ctx.fill();
 
         this.ctx.stroke();
     }
@@ -73,7 +71,7 @@ export class Painter {
 
 
 
-export class Paint { 
+export class MaciekBednarz { 
     canvas  : HTMLCanvasElement;
     ctx : CanvasRenderingContext2D;
     mouseTransformer : MouseTransformer;
@@ -109,6 +107,7 @@ export class Paint {
         map[DrawingMode.RECTANGLE] = new RectHandler();
         map[DrawingMode.LINE] = new LineHandler();
         map[DrawingMode.CIRLCE] = new CircleHandler();
+        map[DrawingMode.BUCKET] = new CircleHandler();
         return map[mode];
     }
 
@@ -192,6 +191,7 @@ export class Paint {
 
         this.painter = new Painter();
         this.painter.ctx = this.ctx;
+        this.painter.canvas = this.canvas;
     }    
 }
 

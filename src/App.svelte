@@ -25,8 +25,6 @@
     paint.setDrawingMode(mode);
   }
 
-  let lulz = true;
-
 
 
 </script>
@@ -54,6 +52,7 @@
   <button on:click={() => {select(DrawingMode.RECTANGLE)}}>Prostokąt</button>
   <button on:click={() => {select(DrawingMode.CIRLCE)}}>Koło</button>
   <button on:click={() => {select(DrawingMode.BRUSH)}}>brush</button> 
+  <button on:click={() => {select(DrawingMode.BUCKET)}}>Fill</button> 
   <br>
   {#if paint}
       <span>Thiccness : {paint.handler.thickness}</span>

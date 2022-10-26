@@ -5,4 +5,5 @@ export enum DrawingMode {
     BRUSH,
     CIRLCE,
     RECTANGLE,
+    BUCKET,
 }
