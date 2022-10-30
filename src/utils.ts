@@ -1,3 +1,5 @@
+import { ColorSample } from "./operation";
+
 export class MouseTransformer {
     relativeTo: HTMLElement;
     constructor(relativeElementId: string) {
@@ -10,6 +12,36 @@ export class MouseTransformer {
 
     }
 }
+
+
+export function _2dArray(w: number, h: number): Array<Array<boolean>> {
+    const ret = [];
+    for (let j = 0; j < h; j++) {
+        const a = [];
+        for (let i = 0; i < w; i++) {
+            a.push(false);
+        }
+        ret.push(a);
+    }
+
+    return ret;
+}
+
+export function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+  }
+  
+export function hexToRgb(hex: string) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return new ColorSample(
+        parseInt(result[1], 16),
+        parseInt(result[2], 16),
+        parseInt(result[3], 16),
+        0
+    );
+}
+  
 
 export class Vector2 { 
     x: number;

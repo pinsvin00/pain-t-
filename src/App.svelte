@@ -12,13 +12,6 @@
     paint = new Paint();
     dragger = new Dragger("canvasDragger", "canvas");
 
-
-    const render = () => {
-      paint.render();
-      window.requestAnimationFrame(render);
-    }
-    window.requestAnimationFrame(render);
-
   })
 
   const select = (mode : DrawingMode) => {

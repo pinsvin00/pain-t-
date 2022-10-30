@@ -18,9 +18,7 @@ export class LineHandler extends OperationHandler {
         this.operation.color = this.color;
         this.operation.thickness = this.thickness;
 
-        this.operations.push(
-            this.operation
-        )
+        this.base.currentOperation = this.operation;
     }
 
     onMove(e: MouseEvent): void {
@@ -41,11 +39,14 @@ export class LineHandler extends OperationHandler {
             this.operation.endPoint = pos;
         }
 
+        this.base.drawCurrentOperation();   
 
     }
 
     onRelease(e: MouseEvent) {
         super.onRelease(e);
+        this.base.operations.push(this.operation);
+        this.base.saveGeneratedImage();
     }
 
 }

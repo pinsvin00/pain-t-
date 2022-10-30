@@ -6,7 +6,7 @@ import { LineHandler } from "./handlers/lineHandler";
 import type { OperationHandler } from "./handlers/operationHandler";
 import { RectHandler } from "./handlers/rectHandler";
 import type { Operation } from "./operation";
-import { MouseTransformer, Vector2 } from "./utils";
+import type { MouseTransformer, Vector2 } from "./utils";
 
 export class Painter {
     ctx: CanvasRenderingContext2D;
@@ -96,17 +96,31 @@ export class Paint {
     lastMouseEvent : MouseEvent;
     operations: Array<Operation> = [];
     handler: OperationHandler;
+    currentOperation: Operation;
 
+    generatedImageData: ImageData;
 
     moveHandler: (e: MouseEvent) => void;
     pressHandler: (e: MouseEvent) => void;
     releaseHandler: (e: MouseEvent) => void;
 
+    drawCurrentOperation() {
+        this.loadGeneratedImage();
+        if(this.currentOperation) {
+            this.currentOperation.draw(this.painter);
+        }
+    }
 
 
-    render() {
-        if(this.painter.draw) return;
+    loadGeneratedImage() {
+        this.ctx.putImageData(this.generatedImageData, 0, 0);
+    }
 
+    saveGeneratedImage() {
+        this.generatedImageData = this.ctx.getImageData(0,0, this.canvas.width, this.canvas.height);
+    }
+
+    generateImage() {
         this.ctx.clearRect(
             0,0, this.canvas.width, this.canvas.height
         )
@@ -114,6 +128,9 @@ export class Paint {
         this.operations.forEach(el => {
             el.draw(this.painter);
         });
+        
+        this.saveGeneratedImage();
+        
     }
 
 
@@ -134,16 +151,12 @@ export class Paint {
         const color = this.handler.color;
         
         this.handler = this.provideHandler(mode);
-        this.handler.operations = this.operations;
         this.handler.fill = fill;
         this.handler.color = color;
+        this.handler.base = this;
         this.handler.thickness = thickness;
 
     }
-
-
-    //TODO linia pozioma
-    //dynamiczna ilosc krokow interpolacji
 
     handleKeyDown(e: KeyboardEvent) {
 
@@ -158,6 +171,7 @@ export class Paint {
 
         if(e.key.toUpperCase() === 'Z' && this.controlPressed) {
             this.operations.pop();
+            this.generateImage();
         }
         if(e.key.toUpperCase() === 'S' && this.controlPressed) {
             e.preventDefault();
@@ -183,10 +197,14 @@ export class Paint {
     constructor() {
         this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
         this.ctx = this.canvas.getContext('2d');
-        this.mouseTransformer = new MouseTransformer("canvas");
 
+        this.painter = new Painter();
+        this.painter.ctx = this.ctx;
+        this.painter.canvas = this.canvas;
         this.handler = new DrawingHandler();
-        this.handler.operations = this.operations;
+        this.handler.base = this;
+
+        this.generateImage();
 
 
         this.releaseHandler = (e: MouseEvent) => {
@@ -205,9 +223,7 @@ export class Paint {
         window.addEventListener('keydown', this.handleKeyDown.bind(this));
         window.addEventListener('keyup', this.handleKeyUp.bind(this));
 
-        this.painter = new Painter();
-        this.painter.ctx = this.ctx;
-        this.painter.canvas = this.canvas;
+
     }    
 }
 

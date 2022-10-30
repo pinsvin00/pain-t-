@@ -1,5 +1,5 @@
 import type { Operation } from "../operation";
-import type { Painter } from "../paint";
+import type { Paint, Painter } from "../paint";
 import { MouseTransformer } from "../utils";
 
 
@@ -15,7 +15,10 @@ export class OperationHandler {
 
     lastMouseEvent : MouseEvent;
     paint: Painter;
-    operations: Array<Operation>;
+    
+    base: Paint;
+
+    saveState: () => void;
 
     constructor() {
         this.transformer = new MouseTransformer("canvas");

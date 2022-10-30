@@ -19,9 +19,7 @@ export class RectHandler extends OperationHandler {
         this.rectangle.fill = this.fill;
         this.rectangle.thickness = this.thickness;
 
-        this.operations.push(
-            this.rectangle
-        )
+        this.base.currentOperation = this.rectangle
     }
 
     onMove(e: MouseEvent): void {
@@ -38,11 +36,14 @@ export class RectHandler extends OperationHandler {
         else {
             this.rectangle.endPoint = pos;
         }
+
+        this.base.drawCurrentOperation();
     }
 
     onRelease(e: MouseEvent) {
         super.onRelease(e);
-        console.log(this.rectangle);
+        this.base.operations.push(this.rectangle);
+        this.base.saveGeneratedImage();
     }
 
 }
