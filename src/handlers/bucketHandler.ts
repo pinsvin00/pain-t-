@@ -14,12 +14,12 @@ export class BucketHandler extends OperationHandler {
         bucket.origin = this.startPoint;
         bucket.color = this.color;
 
-        this.base.currentOperation = bucket
-        this.base.operations.push(bucket);
+        this.layer.currentOperation = bucket
+        this.layer.operations.push(bucket);
 
-        this.base.drawCurrentOperation();
+        this.layer.drawCurrentOperation();
 
-        this.base.saveGeneratedImage();
+        this.layer.saveGeneratedImage();
         
     }
 

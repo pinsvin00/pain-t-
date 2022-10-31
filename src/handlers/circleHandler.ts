@@ -17,7 +17,7 @@ export class CircleHandler extends OperationHandler {
         this.ellipse.fill = this.fill;
         this.ellipse.thickness = this.thickness;
 
-        this.base.currentOperation = this.ellipse;
+        this.layer.currentOperation = this.ellipse;
     }
 
     onMove(e: MouseEvent): void {
@@ -37,13 +37,13 @@ export class CircleHandler extends OperationHandler {
             this.ellipse.radius.y = Math.abs(dif.y);
         }
 
-        this.base.drawCurrentOperation();
+        this.layer.drawCurrentOperation();
 
     }
 
     onRelease(e: MouseEvent) {
         super.onRelease(e);
-        this.base.saveGeneratedImage();
+        this.layer.saveGeneratedImage();
     }
 
 }

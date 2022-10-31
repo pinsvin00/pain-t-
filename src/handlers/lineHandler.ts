@@ -1,6 +1,5 @@
 import { LineOperation } from "../operation";
 import { Vector2 } from "../utils";
-import { DrawingHandler } from "./drawingHandler";
 import { OperationHandler } from "./operationHandler";
 
 
@@ -18,7 +17,7 @@ export class LineHandler extends OperationHandler {
         this.operation.color = this.color;
         this.operation.thickness = this.thickness;
 
-        this.base.currentOperation = this.operation;
+        this.layer.currentOperation = this.operation;
     }
 
     onMove(e: MouseEvent): void {
@@ -39,14 +38,14 @@ export class LineHandler extends OperationHandler {
             this.operation.endPoint = pos;
         }
 
-        this.base.drawCurrentOperation();   
+        this.layer.drawCurrentOperation();   
 
     }
 
     onRelease(e: MouseEvent) {
         super.onRelease(e);
-        this.base.operations.push(this.operation);
-        this.base.saveGeneratedImage();
+        this.layer.operations.push(this.operation);
+        this.layer.saveGeneratedImage();
     }
 
 }

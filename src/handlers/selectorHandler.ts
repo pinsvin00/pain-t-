@@ -5,7 +5,7 @@ import { OperationHandler } from "./operationHandler";
 
 
 
-export class RectHandler extends OperationHandler {
+export class SelectorHandler extends OperationHandler {
 
     startPoint: Vector2;
     rectangle: RectOperation;

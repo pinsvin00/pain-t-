@@ -10,13 +10,13 @@ export class DrawingHandler extends OperationHandler {
     onPress(e: MouseEvent) : void {
         super.onPress(e);
         this.generatedOperation = new DrawOperation();
-        this.base.currentOperation = this.generatedOperation;
+        this.layer.currentOperation = this.generatedOperation;
     }
 
     onRelease(e: MouseEvent): void {
         super.onRelease(e);
-        this.base.operations.push(this.generatedOperation);
-        this.base.saveGeneratedImage();
+        this.layer.operations.push(this.generatedOperation);
+        this.layer.saveGeneratedImage();
     }
 
     onMove(e: MouseEvent) {
@@ -39,8 +39,8 @@ export class DrawingHandler extends OperationHandler {
             let circle = new Circle(currPos, this.thickness, this.color);
             this.generatedOperation.circles.push(circle);
 
-            this.base.painter.color = circle.color;
-            this.base.painter.circle(circle.position, circle.radius, false);
+            this.layer.painter.color = circle.color;
+            this.layer.painter.circle(circle.position, circle.radius, false);
 
             currPos = currPos.add(step); 
         }

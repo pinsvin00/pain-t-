@@ -1,4 +1,4 @@
-import type { Painter } from "./paint";
+import type { Painter } from "./Painter";
 import { hexToRgb, Vector2, _2dArray } from "./utils";
 import { Operation, ColorSample } from "./operation";
 

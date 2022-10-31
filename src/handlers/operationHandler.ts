@@ -1,5 +1,6 @@
 import type { Operation } from "../operation";
-import type { Paint, Painter } from "../paint";
+import type { Layer } from "../layer";
+import type { Painter } from "../Painter";
 import { MouseTransformer } from "../utils";
 
 
@@ -16,7 +17,7 @@ export class OperationHandler {
     lastMouseEvent : MouseEvent;
     paint: Painter;
     
-    base: Paint;
+    layer: Layer;
 
     saveState: () => void;
 

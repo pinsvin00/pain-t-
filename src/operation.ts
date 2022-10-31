@@ -1,5 +1,5 @@
 import type { DrawingMode } from "./drawingMode";
-import type { Painter } from "./paint";
+import type { Painter } from "./Painter";
 import { Vector2 } from "./utils";
 
 
