@@ -1,14 +1,22 @@
-import { DrawingMode } from "./drawingMode";
-import { BucketHandler } from "./handlers/bucketHandler";
-import { CircleHandler } from "./handlers/circleHandler";
-import { DrawingHandler } from "./handlers/drawingHandler";
-import { LineHandler } from "./handlers/lineHandler";
-import type { OperationHandler } from "./handlers/operationHandler";
-import { RectHandler } from "./handlers/rectHandler";
-import { Layer } from "./layer";
-import { Vector2 } from "./utils";
+import { DrawingMode } from "../drawingMode";
+import { BucketHandler } from "../handlers/bucketHandler";
+import { CircleHandler } from "../handlers/circleHandler";
+import { DrawingHandler } from "../handlers/drawingHandler";
+import { LineHandler } from "../handlers/lineHandler";
+import type { OperationHandler } from "../handlers/operationHandler";
+import { RectHandler } from "../handlers/rectHandler";
+import { Layer } from "../paint/layer";
+import { Vector2 } from "../utils";
+import { canvas, ctx } from "./bufferCanvasProvider";
 
 
+
+export class ToolBox { 
+    thickness = 2.0;
+    fill = false;
+    color = "black";
+
+}
 
 export class Paint {
     layers: Array<Layer> = [];
@@ -27,13 +35,12 @@ export class Paint {
 
 
     constructor() {
-        this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
-        this.ctx = this.canvas.getContext('2d');
+        this.canvas = canvas;
+        this.ctx = ctx;
 
         this.selectedLayer = new Layer(
             new Vector2(this.canvas.width, this.canvas.height),
-            new Vector2(0,0 ),
-            this.ctx, this.canvas
+            new Vector2(0,0),
         );
 
 
@@ -92,7 +99,6 @@ export class Paint {
         if(e.key.toUpperCase() === 'Z' && this.controlPressed) {
             this.selectedLayer.operations.pop();
             this.selectedLayer.generateImage();
-
             this.drawCanvas();
         }
         if(e.key.toUpperCase() === 'S' && this.controlPressed) {
@@ -122,7 +128,7 @@ export class Paint {
         )
 
         for(let layer of this.layers) {
-            layer.loadGeneratedImage();
+            if(layer.imageData) this.ctx.putImageData(layer.imageData, 0, 0);
         }
     }
 }

@@ -1,4 +1,4 @@
-import { Circle, DrawOperation, Operation } from "../operation";
+import { Circle, DrawOperation, Operation } from "../operations/operation";
 import { OperationHandler } from "./operationHandler";
 
 
@@ -16,7 +16,7 @@ export class DrawingHandler extends OperationHandler {
     onRelease(e: MouseEvent): void {
         super.onRelease(e);
         this.layer.operations.push(this.generatedOperation);
-        this.layer.saveGeneratedImage();
+        this.layer.generateImage();
     }
 
     onMove(e: MouseEvent) {

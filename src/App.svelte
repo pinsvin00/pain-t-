@@ -3,16 +3,19 @@
   import { Dragger } from './Dragger';
   import { DrawingMode } from './drawingMode';
   import './app.css'
-    import { Paint } from './paint';
-    import ModalWindow from './ModalWindow.svelte';
-    import { Layer } from './layer';
-    import { Vector2 } from './utils';
+  import { Paint } from './paint/paint';
+  import ModalWindow from './components/ModalWindow.svelte';
+  import { Layer } from './paint/layer';
+  import { Vector2 } from './utils';
+    import { loadCanvasData } from './paint/bufferCanvasProvider';
 
   let paint : Paint;
   let dragger : Dragger;
   let modal: ModalWindow;
 
   onMount(() => {
+    loadCanvasData();
+
     paint = new Paint();
     dragger = new Dragger("canvasDragger", "canvas");
 
@@ -51,9 +54,21 @@
   <button on:click={() => {select(DrawingMode.BRUSH)}}>brush</button> 
   <button on:click={() => {select(DrawingMode.BUCKET)}}>Fill</button> 
   <button on:click={() => {select(DrawingMode.SELECT)}}>Wybierak</button>
+
+
   <button on:click={() => {
     modal.changeVisibility();
   }}>Warstwy</button>
+
+  <br>
+
+  <button on:click={() => { paint.drawCanvas(); }}>DEBUG: NARYSUJ PONOWNIE</button>
+  <button on:click={() => {
+     console.log(paint.selectedLayer); console.log(paint.handler.layer) 
+     }}>DEBUG: WYLOGUJ AKTUALNĄ WARSTWĘ</button>
+  <button on:click={() => {
+     paint.selectedLayer.generateImage();
+     }}>DEBUG: STWÓRZ AKTUALNĄ WARSTWĘ </button>
   <br>
   {#if paint}
       <span>Thiccness : {paint.handler.thickness}</span>
@@ -67,11 +82,10 @@
         <div slot="header" style="margin-bottom: 2rem"> Informacje o warstwach </div>
         <div slot="content" style="margin-bottom: 2rem">
           <button style="margin-bottom: 1rem; margin-top: 1rem" on:click={() => {
+
             const layer = new Layer(
               new Vector2(paint.canvas.width, paint.canvas.height), 
-              new Vector2(0, 0 ), 
-              paint.ctx, 
-              paint.canvas
+              new Vector2(0, 0 )
             )
 
             paint.layers.push(layer);
@@ -103,6 +117,8 @@
 
               <button style="margin-left: 2rem;" on:click={() => {
                 paint.selectedLayer = layer;
+                paint.handler.layer = layer;
+                console.log(layer);
               }}>Wybierz</button>
 
 
@@ -126,6 +142,8 @@
 
 <div>
   <canvas id="canvas" width="1000" height="500" style="border: 1px solid green"></canvas>
+  <canvas id="buffer-canvas" width="1000" height="500" style="visibility: hidden"></canvas>
+
   <button id="canvasDragger" class="dragger" style="position: absolute; top: 500px; left: 1000px;">-</button>
 </div>
 

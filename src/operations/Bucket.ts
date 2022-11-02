@@ -1,5 +1,5 @@
-import type { Painter } from "./Painter";
-import { hexToRgb, Vector2, _2dArray } from "./utils";
+import type { Painter } from "../Painter";
+import { hexToRgb, Vector2, _2dArray } from "../utils";
 import { Operation, ColorSample } from "./operation";
 
 export class Bucket extends Operation {

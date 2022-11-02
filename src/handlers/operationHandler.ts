@@ -1,5 +1,5 @@
-import type { Operation } from "../operation";
-import type { Layer } from "../layer";
+import type { Operation } from "../operations/operation";
+import type { Layer } from "../paint/layer";
 import type { Painter } from "../Painter";
 import { MouseTransformer } from "../utils";
 

@@ -1,4 +1,4 @@
-import { ColorSample } from "./operation";
+import { ColorSample } from "./operations/operation";
 
 export class MouseTransformer {
     relativeTo: HTMLElement;

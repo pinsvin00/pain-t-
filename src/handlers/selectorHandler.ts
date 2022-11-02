@@ -1,4 +1,4 @@
-import { LineOperation, RectOperation } from "../operation";
+import { LineOperation, RectOperation } from "../operations/operation";
 import { Vector2 } from "../utils";
 import { DrawingHandler } from "./drawingHandler";
 import { OperationHandler } from "./operationHandler";

@@ -1,5 +1,4 @@
-import { EllipseOperation, LineOperation } from "../operation";
-import { Bucket } from "../Bucket";
+import { Bucket } from "../operations/Bucket";
 import type { Vector2 } from "../utils";
 import { OperationHandler } from "./operationHandler";
 
@@ -18,9 +17,7 @@ export class BucketHandler extends OperationHandler {
         this.layer.operations.push(bucket);
 
         this.layer.drawCurrentOperation();
-
         this.layer.saveGeneratedImage();
-        
     }
 
 }

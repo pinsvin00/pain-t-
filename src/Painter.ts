@@ -10,6 +10,12 @@ export class Painter {
     thickness = 2.0;
 
 
+    constructor(canvas : HTMLCanvasElement) {
+        this.canvas = canvas;
+        this.ctx = this.canvas.getContext('2d');
+    }
+
+
     reloadCanvasData() {
         this.ctx.fillStyle = this.color;
         this.ctx.strokeStyle = this.color;
@@ -68,7 +74,6 @@ export class Painter {
     }
 
     async dot(start: Vector2) {
-
         this.reloadCanvasData();
         this.ctx.fillRect(start.x, start.y, 1, 1);
     }

@@ -1,4 +1,4 @@
-import { EllipseOperation, LineOperation } from "../operation";
+import { EllipseOperation, LineOperation } from "../operations/operation";
 import { Vector2 } from "../utils";
 import { OperationHandler } from "./operationHandler";
 
