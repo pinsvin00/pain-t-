@@ -1,37 +1,53 @@
+import type { Paint } from "./paint/paint";
 
 
-export class Dragger {
+export class CanvasDragger {
 
     element: HTMLElement;
-    subject: HTMLElement;
+    paint: Paint;
+    subjects: Array<HTMLElement> = [];
 
     active = false;
 
-    constructor(id: string, subjectId: string) {
+    boundMouseMove: any;
+    boundMouseUp: any;
+
+    onMouseMove(e: MouseEvent) { 
+        this.subjects.forEach(subject => {
+            subject.setAttribute("width", e.clientX + "px");
+            subject.setAttribute("height", e.clientY + "px");
+        })
+
+        this.element.style.setProperty("left", e.clientX + "px");
+        this.element.style.setProperty("top", e.clientY + "px");
+    }
+
+    onMouseUp() {
+        console.log("cockerton")
+        document.removeEventListener('mousemove', this.boundMouseMove);
+        document.removeEventListener('mouseup', this.boundMouseUp);
+    }
+
+    onMouseDown() {
+        this.boundMouseUp = this.onMouseUp.bind(this);
+        this.boundMouseMove = this.onMouseMove.bind(this);
+        document.addEventListener('mousemove', this.boundMouseMove);
+        document.addEventListener('mouseup', this.boundMouseUp);
+    }
+
+    constructor(id: string, subjectIds : Array<string>) {
         this.element = document.getElementById(id);
-        this.subject = document.getElementById(subjectId);
-        if(this.element === null || this.subject === null){
-            console.error(`Couldnt find element or subject\n element ${this.element} subject ${this.subject}`);
+
+        subjectIds.forEach(subjectId => {
+            const domEl = document.getElementById(subjectId);
+            this.subjects.push(domEl);
+        })
+        if(this.element === null){
+            console.error(`Couldnt find element or subject\n element ${this.element} subjects ${this.subjects}`);
             return;
         }
 
-        this.element.addEventListener('mousedown', ()=> {
-            this.active = true;
-        });
-
-        document.addEventListener('mousemove',  (e: MouseEvent) => {
-            if(!this.active) return;
-
-            this.subject.setAttribute("width", e.clientX - 20 + "px");
-            this.subject.setAttribute("height", e.clientY  - 20 + "px");
-
-            this.element.style.setProperty("left", e.clientX + "px");
-            this.element.style.setProperty("top", e.clientY + "px");
-        })
-
-        this.element.onmouseup = () => {
-            this.active = false;
-        }
+        this.element.addEventListener('mousedown', this.onMouseDown.bind(this));
     }
 
 

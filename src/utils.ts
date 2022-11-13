@@ -16,9 +16,9 @@ export class MouseTransformer {
 
 export function _2dArray(w: number, h: number): Array<Array<boolean>> {
     const ret = [];
-    for (let j = 0; j < h; j++) {
+    for (let j = 0; j < w; j++) {
         const a = [];
-        for (let i = 0; i < w; i++) {
+        for (let i = 0; i < h; i++) {
             a.push(false);
         }
         ret.push(a);

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { Dragger } from './Dragger';
+  import { CanvasDragger } from './Dragger';
   import { DrawingMode } from './drawingMode';
   import './app.css'
   import { Paint } from './paint/paint';
@@ -10,14 +10,16 @@
     import { loadCanvasData } from './paint/bufferCanvasProvider';
 
   let paint : Paint;
-  let dragger : Dragger;
+  let dragger : CanvasDragger;
   let modal: ModalWindow;
+
+  let debug = true;
 
   onMount(() => {
     loadCanvasData();
-
+CanvasDragger
     paint = new Paint();
-    dragger = new Dragger("canvasDragger", "canvas");
+    dragger = new CanvasDragger("canvasDragger", ["canvas", "buffer-canvas"]);
 
   })
 
@@ -44,6 +46,19 @@
   canvas:hover { 
     cursor : crosshair;
   }
+  canvas {
+    background-image: url("static/smol_mesh.png");
+    background-repeat: repeat;
+  }
+
+  .interactive:hover {
+    color: red;
+    cursor: pointer;
+  }
+
+  .ml-3 { 
+    margin-left: 3rem;
+  }
 
 </style>
 
@@ -61,15 +76,20 @@
   }}>Warstwy</button>
 
   <br>
+  {#if debug}
+    <div>
+      <button on:click={() => { paint.drawCanvas(); }}>DEBUG: NARYSUJ PONOWNIE</button>
+      <button on:click={() => {
+        paint.layers.forEach(el=> console.log(el));
+        }}>DEBUG: WYLOGUJ WSZYSTKIE WARSTWY</button>
+      <button on:click={() => {
+        paint.selectedLayer.generateImage();
+        }}>DEBUG: STWÓRZ AKTUALNĄ WARSTWĘ </button>
+    </div>
+    <br>
+  {/if}
 
-  <button on:click={() => { paint.drawCanvas(); }}>DEBUG: NARYSUJ PONOWNIE</button>
-  <button on:click={() => {
-     console.log(paint.selectedLayer); console.log(paint.handler.layer) 
-     }}>DEBUG: WYLOGUJ AKTUALNĄ WARSTWĘ</button>
-  <button on:click={() => {
-     paint.selectedLayer.generateImage();
-     }}>DEBUG: STWÓRZ AKTUALNĄ WARSTWĘ </button>
-  <br>
+
   {#if paint}
       <span>Thiccness : {paint.handler.thickness}</span>
       <input type="range" min="1" max="10" bind:value={paint.handler.thickness}>
@@ -97,11 +117,31 @@
             <div style="display: flex; margin-bottom: 1rem">
 
               {#if paint.selectedLayer === layer}
-                <span style="margin-right: 3rem">Wybrana</span>
+                <span style="margin-right: 3rem">✅</span>
+              {:else}
+                <span style="margin-right: 3rem">💅</span>              
               {/if}
 
+              <span class="interactive ml-3" style="font-size: 25px;" on:mousedown={() => {
+                let upper = paint.layers[i-1]
+                let current = paint.layers[i];
 
-              <span>{layer.name}</span>
+                let buffer = current;
+                current = upper;
+                upper = buffer;
+              }}>&#8593;</span>
+              <span class="interactive ml-3" style="font-size: 25px;" on:mousedown={() => {
+                let current = paint.layers[i]
+                let lower = paint.layers[i+1];
+                let buffer = current;
+
+                current = lower;
+                lower = buffer;
+
+              }}>&#8595;</span>
+
+
+              <span class="ml-3">{layer.name}</span>
 
               <button style="margin-left: 2rem;" on:click={() => {
                 let confirmed = window.confirm("Czy napewno chcesz usunąć tą warstwę?");
@@ -144,6 +184,6 @@
   <canvas id="canvas" width="1000" height="500" style="border: 1px solid green"></canvas>
   <canvas id="buffer-canvas" width="1000" height="500" style="visibility: hidden"></canvas>
 
-  <button id="canvasDragger" class="dragger" style="position: absolute; top: 500px; left: 1000px;">-</button>
+  <button id="canvasDragger" class="dragger" style="position: absolute; top: 500px; left: 1000px; width: 20px; height: 20px; border-radius: 100%"></button>
 </div>
 

@@ -44,7 +44,7 @@ export class Paint {
         );
 
 
-        this.handler = new DrawingHandler();
+        this.handler = new DrawingHandler(this);
         this.handler.layer = this.selectedLayer;
         this.layers.push(this.selectedLayer);
 
@@ -67,11 +67,11 @@ export class Paint {
 
     provideHandler(mode: DrawingMode) {
         const map = new Map<DrawingMode, OperationHandler>();
-        map[DrawingMode.BRUSH] = new DrawingHandler();
-        map[DrawingMode.RECTANGLE] = new RectHandler();
-        map[DrawingMode.LINE] = new LineHandler();
-        map[DrawingMode.CIRLCE] = new CircleHandler();
-        map[DrawingMode.BUCKET] = new BucketHandler();
+        map[DrawingMode.BRUSH] = new DrawingHandler(this);
+        map[DrawingMode.RECTANGLE] = new RectHandler(this);
+        map[DrawingMode.LINE] = new LineHandler(this);
+        map[DrawingMode.CIRLCE] = new CircleHandler(this);
+        map[DrawingMode.BUCKET] = new BucketHandler(this);
         return map[mode];
     }
 
@@ -82,6 +82,7 @@ export class Paint {
         const color = this.handler.color;
         
         this.handler = this.provideHandler(mode);
+        this.handler.paint = this;
         this.handler.fill = fill;
         this.handler.color = color;
         this.handler.layer = this.selectedLayer;
@@ -121,6 +122,23 @@ export class Paint {
         }
     }
 
+    blendImageData(imageData: ImageData) {
+        const ctxImageData = this.ctx.getImageData(0,0, this.canvas.width, this.canvas.height);
+
+        for(let i = 0 ; i < ctxImageData.data.length; i += 4) {
+            if(ctxImageData.data[i+3] === 0) {
+                ctxImageData.data[i]   = imageData.data[i] 
+                ctxImageData.data[i+1] = imageData.data[i+1]
+                ctxImageData.data[i+2] = imageData.data[i+2]
+                ctxImageData.data[i+3] = imageData.data[i+3]
+            }
+        }
+
+        this.ctx.putImageData(ctxImageData, 0, 0);
+
+
+    }
+
 
     drawCanvas() {
         this.ctx.clearRect(
@@ -128,7 +146,7 @@ export class Paint {
         )
 
         for(let layer of this.layers) {
-            if(layer.imageData) this.ctx.putImageData(layer.imageData, 0, 0);
+            if(layer.imageData) this.blendImageData(layer.imageData);
         }
     }
 }

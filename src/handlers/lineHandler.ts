@@ -43,9 +43,10 @@ export class LineHandler extends OperationHandler {
     }
 
     onRelease(e: MouseEvent) {
-        super.onRelease(e);
         this.layer.operations.push(this.operation);
         this.layer.saveGeneratedImage();
+
+        super.onRelease(e);
     }
 
 }

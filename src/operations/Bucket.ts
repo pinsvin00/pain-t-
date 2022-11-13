@@ -1,3 +1,4 @@
+import { canvas } from "../paint/bufferCanvasProvider";
 import type { Painter } from "../Painter";
 import { hexToRgb, Vector2, _2dArray } from "../utils";
 import { Operation, ColorSample } from "./operation";
@@ -28,7 +29,7 @@ export class Bucket extends Operation {
     }
 
     validCoords(pos: Vector2) {
-        return pos.x < this.imageSize.x - 1 && pos.y < this.imageSize.y - 1 && pos.y >= 0 && pos.x >= 0;
+        return pos.x < this.imageSize.x && pos.y < this.imageSize.y && pos.y >= 0 && pos.x >= 0;
     }
 
     setColor(pos: Vector2, sample: ColorSample) {
@@ -70,6 +71,7 @@ export class Bucket extends Operation {
                 pos, desiredColor
             );
         }
+
         this.painter.ctx.putImageData(
             this.imageData, 0, 0
         );
@@ -79,7 +81,7 @@ export class Bucket extends Operation {
 
     draw(painter: Painter) {
         this.painter = painter;
-        this.imageSize = new Vector2(painter.canvas.width, painter.canvas.height);
+        this.imageSize = new Vector2(canvas.width, canvas.height);
         this.imageData = painter.ctx.getImageData(0, 0, this.imageSize.x, this.imageSize.y);
 
         this.visited = _2dArray(this.imageSize.x, this.imageSize.y);

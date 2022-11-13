@@ -41,9 +41,9 @@ export class RectHandler extends OperationHandler {
     }
 
     onRelease(e: MouseEvent) {
-        super.onRelease(e);
         this.layer.operations.push(this.rectangle);
         this.layer.saveGeneratedImage();
+        super.onRelease(e);
     }
 
 }

@@ -21,6 +21,9 @@ export class CircleHandler extends OperationHandler {
     }
 
     onMove(e: MouseEvent): void {
+
+        this.paint.drawCanvas();
+
         if(!this.mousePressed) {
             return;
         }
@@ -42,8 +45,8 @@ export class CircleHandler extends OperationHandler {
     }
 
     onRelease(e: MouseEvent) {
+        this.layer.operations.push(this.ellipse);
         super.onRelease(e);
-        this.layer.saveGeneratedImage();
     }
 
 }

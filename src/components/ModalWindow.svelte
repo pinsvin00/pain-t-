@@ -5,7 +5,6 @@
 
     let hidden = "hidden"
     export const changeVisibility = () => {
-        console.log("sussy baka", hidden)
         if(hidden === 'hidden') {
             hidden = ''
         }

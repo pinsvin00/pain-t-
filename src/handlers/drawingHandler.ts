@@ -14,9 +14,8 @@ export class DrawingHandler extends OperationHandler {
     }
 
     onRelease(e: MouseEvent): void {
-        super.onRelease(e);
         this.layer.operations.push(this.generatedOperation);
-        this.layer.generateImage();
+        super.onRelease(e);
     }
 
     onMove(e: MouseEvent) {
