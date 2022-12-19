@@ -25,6 +25,8 @@ export class LineHandler extends OperationHandler {
             return;
         }
 
+        this.layer.loadOntoBuffer();
+
         let pos = this.transformer.transform(e);
         if(this.proportional) {
             const dif = this.startPoint.sub(pos);
@@ -38,13 +40,12 @@ export class LineHandler extends OperationHandler {
             this.operation.endPoint = pos;
         }
 
-        this.layer.drawCurrentOperation();   
-
+        this.layer.currentOperation.drawWith(this.layer.bufferPainter); //narysuj na bufor
     }
 
     onRelease(e: MouseEvent) {
         this.layer.operations.push(this.operation);
-        this.layer.saveGeneratedImage();
+        this.layer.saveFromBuffer();
 
         super.onRelease(e);
     }

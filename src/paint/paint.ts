@@ -1,30 +1,33 @@
-import { DrawingMode } from "../drawingMode";
-import { BucketHandler } from "../handlers/bucketHandler";
-import { CircleHandler } from "../handlers/circleHandler";
-import { DrawingHandler } from "../handlers/drawingHandler";
-import { LineHandler } from "../handlers/lineHandler";
-import type { OperationHandler } from "../handlers/operationHandler";
-import { RectHandler } from "../handlers/rectHandler";
-import { Layer } from "../paint/layer";
-import { Vector2 } from "../utils";
-import { canvas, ctx } from "./bufferCanvasProvider";
+import {DrawingMode} from "../drawingMode";
+import {BucketHandler} from "../handlers/bucketHandler";
+import {CircleHandler} from "../handlers/circleHandler";
+import {DrawingHandler} from "../handlers/drawingHandler";
+import {LineHandler} from "../handlers/lineHandler";
+import type {OperationHandler} from "../handlers/operationHandler";
+import {RectHandler} from "../handlers/rectHandler";
+import {Layer} from "../paint/layer";
+import {MouseTransformer, Vector2} from "../utils";
+import {canvas, canvasBuffer, ctx, ctxBuffer} from "./bufferCanvasProvider";
+import {SelectorHandler} from "../handlers/selectorHandler";
 
 
-
-export class ToolBox { 
+export class ToolBox {
     thickness = 2.0;
     fill = false;
     color = "black";
-
 }
 
 export class Paint {
     layers: Array<Layer> = [];
     selectedLayer: Layer;
 
+    lastMousePos: Vector2;
+
     ctx: CanvasRenderingContext2D;
     canvas: HTMLCanvasElement;
     handler: OperationHandler;
+
+    localCopiedImage: ImageData;
 
     moveHandler: (e: MouseEvent) => void;
     pressHandler: (e: MouseEvent) => void;
@@ -32,7 +35,38 @@ export class Paint {
 
     controlPressed = false;
     shiftPressed = false;
+    preferLocalOverExternal = true;
 
+    async onPaste(e : ClipboardEvent) {
+        let items = (e.clipboardData).items;
+
+        if(this.localCopiedImage && this.preferLocalOverExternal) {
+            this.selectedLayer.pasteImg(this.localCopiedImage);
+            return;
+        }
+        for (let index in items) {
+            if (items[index].kind === 'file') {
+                let blob = items[index].getAsFile();
+                let bitmap = await createImageBitmap(blob);
+
+                let canvas = document.createElement("canvas");
+                canvas.setAttribute("width", bitmap.width + "px")
+                canvas.setAttribute("height", bitmap.height + "px")
+                canvas.setAttribute("style", "visibility: none");
+
+                let context = canvas.getContext('2d');
+                context.drawImage(bitmap, 0, 0);
+
+                let imageData = context.getImageData(0, 0, bitmap.width, bitmap.height);
+
+                canvas.remove();
+
+                if(this.selectedLayer) {
+                    this.selectedLayer.pasteImg(imageData);
+                }
+            }
+        }
+    }
 
     constructor() {
         this.canvas = canvas;
@@ -52,6 +86,9 @@ export class Paint {
             this.handler.onRelease(e);
         }
         this.moveHandler = (e: MouseEvent) => {
+            const transformer = new MouseTransformer("canvas");
+            this.selectedLayer.lastMouseEvent = transformer.transform(e);
+
             this.handler.onMove(e);
         }
         this.pressHandler = (e: MouseEvent) => {
@@ -72,6 +109,10 @@ export class Paint {
         map[DrawingMode.LINE] = new LineHandler(this);
         map[DrawingMode.CIRLCE] = new CircleHandler(this);
         map[DrawingMode.BUCKET] = new BucketHandler(this);
+        map[DrawingMode.SELECT] = new SelectorHandler(this, false);
+        map[DrawingMode.CUTTER] = new SelectorHandler(this, true)
+
+
         return map[mode];
     }
 
@@ -89,20 +130,19 @@ export class Paint {
         this.handler.thickness = thickness;
     }
 
-    handleKeyDown(e: KeyboardEvent) {
+    async handleKeyDown(e: KeyboardEvent) {
         if(e.key === 'Control') {
             this.controlPressed = true;
         }
-        if (e.key === 'Shift') {
+        else if (e.key === 'Shift') {
             this.handler.proportional = true;
         }
-
-        if(e.key.toUpperCase() === 'Z' && this.controlPressed) {
+        else if(e.key.toUpperCase() === 'Z' && this.controlPressed) {
             this.selectedLayer.operations.pop();
             this.selectedLayer.generateImage();
-            this.drawCanvas();
+            this.createCanvas();
         }
-        if(e.key.toUpperCase() === 'S' && this.controlPressed) {
+        else if(e.key.toUpperCase() === 'S' && this.controlPressed) {
             e.preventDefault();
             const dummy = document.getElementById("dummy");
             const data = this.canvas.toDataURL("image/png").replace("image/png", "image/octet-stream")
@@ -140,13 +180,20 @@ export class Paint {
     }
 
 
-    drawCanvas() {
+    createCanvas() {
         this.ctx.clearRect(
             0, 0 , this.canvas.width, this.canvas.height
         )
 
         for(let layer of this.layers) {
-            if(layer.imageData) this.blendImageData(layer.imageData);
+            if(layer === this.selectedLayer) {
+                let data = ctxBuffer.getImageData(0,0, canvasBuffer.width, canvasBuffer.height);
+                this.blendImageData(data);
+            }
+
+            else if(layer.imageData) {
+                this.blendImageData(layer.imageData);
+            }
         }
     }
 }

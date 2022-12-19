@@ -26,9 +26,9 @@ export class DrawingHandler extends OperationHandler {
             this.lastMouseEvent = e;
         }
 
+
         const pos = this.transformer.transform(e);
         const lastPos = this.transformer.transform(this.lastMouseEvent);
-
         const STEPS = 50;
 
         const step = pos.sub(lastPos).divFac(STEPS); 
@@ -38,12 +38,13 @@ export class DrawingHandler extends OperationHandler {
             let circle = new Circle(currPos, this.thickness, this.color);
             this.generatedOperation.circles.push(circle);
 
-            this.layer.painter.color = circle.color;
-            this.layer.painter.circle(circle.position, circle.radius, false);
+            this.layer.bufferPainter.color = circle.color;
+            this.layer.bufferPainter.circle(circle.position, circle.radius, false);
 
             currPos = currPos.add(step); 
         }
 
+        this.layer.saveFromBuffer();
         this.lastMouseEvent = e;
 
     }

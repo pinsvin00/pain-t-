@@ -5,8 +5,6 @@ import type { Painter } from "../Painter";
 import { MouseTransformer } from "../utils";
 
 
-//przed kazdym nowym narysowaniem 
-
 export class OperationHandler {
     
     transformer: MouseTransformer;
@@ -25,6 +23,7 @@ export class OperationHandler {
     saveState: () => void;
 
     constructor(paint: Paint) {
+        this.paint = paint;
         this.transformer = new MouseTransformer("canvas");
     }
 
@@ -37,7 +36,7 @@ export class OperationHandler {
         this.mousePressed = false;
         this.lastMouseEvent = null;
 
-        this.layer.generateImage();
+        //this.layer.generateImage();
     }
 
     onMove(e: MouseEvent) {

@@ -21,13 +21,11 @@ export class CircleHandler extends OperationHandler {
     }
 
     onMove(e: MouseEvent): void {
-
-        this.paint.drawCanvas();
-
         if(!this.mousePressed) {
             return;
         }
 
+        this.layer.loadOntoBuffer();
         const pos = this.transformer.transform(e);
 
         if(this.proportional) {
@@ -40,7 +38,9 @@ export class CircleHandler extends OperationHandler {
             this.ellipse.radius.y = Math.abs(dif.y);
         }
 
-        this.layer.drawCurrentOperation();
+
+        this.lastMouseEvent = e;
+        this.layer.currentOperation.drawWith(this.layer.bufferPainter); //narysuj na bufor
 
     }
 

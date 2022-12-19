@@ -79,7 +79,7 @@ export class Bucket extends Operation {
 
     }
 
-    draw(painter: Painter) {
+    drawWith(painter: Painter) {
         this.painter = painter;
         this.imageSize = new Vector2(canvas.width, canvas.height);
         this.imageData = painter.ctx.getImageData(0, 0, this.imageSize.x, this.imageSize.y);

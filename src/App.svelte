@@ -6,8 +6,9 @@
   import { Paint } from './paint/paint';
   import ModalWindow from './components/ModalWindow.svelte';
   import { Layer } from './paint/layer';
-  import { Vector2 } from './utils';
-    import { loadCanvasData } from './paint/bufferCanvasProvider';
+  import {MouseTransformer, Vector2} from './utils';
+  import {canvas, loadCanvasData} from './paint/bufferCanvasProvider';
+  import {canvasBuffer, ctxBuffer} from "./paint/bufferCanvasProvider.js";
 
   let paint : Paint;
   let dragger : CanvasDragger;
@@ -17,8 +18,17 @@
 
   onMount(() => {
     loadCanvasData();
-CanvasDragger
     paint = new Paint();
+    const frameCallback = () => {
+      paint.createCanvas();
+      window.requestAnimationFrame(frameCallback)
+    }
+
+    document.onpaste = (event : ClipboardEvent) => {
+      paint.onPaste(event);
+    }
+
+    window.requestAnimationFrame(frameCallback);
     dragger = new CanvasDragger("canvasDragger", ["canvas", "buffer-canvas"]);
 
   })
@@ -67,18 +77,27 @@ CanvasDragger
   <button on:click={() => {select(DrawingMode.RECTANGLE)}}>Prostokąt</button>
   <button on:click={() => {select(DrawingMode.CIRLCE)}}>Koło</button>
   <button on:click={() => {select(DrawingMode.BRUSH)}}>brush</button> 
-  <button on:click={() => {select(DrawingMode.BUCKET)}}>Fill</button> 
-  <button on:click={() => {select(DrawingMode.SELECT)}}>Wybierak</button>
+  <button on:click={() => {select(DrawingMode.BUCKET)}}>Fill</button>
+
+  <button style="margin-left: 1rem" on:click={() => {select(DrawingMode.SELECT)}}>Wybierak</button>
+  <button on:click={() => {select(DrawingMode.CUTTER)}}>Wycinak</button>
+  <button on:click={() => {paint.localCopiedImage = null}}>Wyczyść lokalny obrazek</button>
+  {#if paint}
+    <button on:click={() => {paint.preferLocalOverExternal = !paint.preferLocalOverExternal}}> { (
+            paint.preferLocalOverExternal ? "local" : "external")  + " img paste"}
+    </button>
+  {/if}
 
 
-  <button on:click={() => {
+  <button style="margin-left: 1rem" on:click={() => {
     modal.changeVisibility();
   }}>Warstwy</button>
 
   <br>
+  <br>
   {#if debug}
     <div>
-      <button on:click={() => { paint.drawCanvas(); }}>DEBUG: NARYSUJ PONOWNIE</button>
+      <button on:click={() => { paint.drawCanvas() }}>DEBUG: NARYSUJ PONOWNIE</button>
       <button on:click={() => {
         paint.layers.forEach(el=> console.log(el));
         }}>DEBUG: WYLOGUJ WSZYSTKIE WARSTWY</button>
@@ -123,20 +142,20 @@ CanvasDragger
               {/if}
 
               <span class="interactive ml-3" style="font-size: 25px;" on:mousedown={() => {
-                let upper = paint.layers[i-1]
-                let current = paint.layers[i];
-
-                let buffer = current;
-                current = upper;
-                upper = buffer;
+                try {
+                    let buffer = paint.layers[i];
+                    paint.layers[i] = paint.layers[i-1];
+                    paint.layers[i-1] = buffer;
+                }
+                catch{}
               }}>&#8593;</span>
               <span class="interactive ml-3" style="font-size: 25px;" on:mousedown={() => {
-                let current = paint.layers[i]
-                let lower = paint.layers[i+1];
-                let buffer = current;
-
-                current = lower;
-                lower = buffer;
+                try {
+                    let buffer = paint.layers[i];
+                    paint.layers[i] = paint.layers[i+1];
+                    paint.layers[i+1] = buffer;
+                }
+                catch{}
 
               }}>&#8595;</span>
 
@@ -158,7 +177,7 @@ CanvasDragger
               <button style="margin-left: 2rem;" on:click={() => {
                 paint.selectedLayer = layer;
                 paint.handler.layer = layer;
-                console.log(layer);
+                ctxBuffer.clearRect(0,0, canvasBuffer.width, canvasBuffer.height);
               }}>Wybierz</button>
 
 
@@ -182,7 +201,7 @@ CanvasDragger
 
 <div>
   <canvas id="canvas" width="1000" height="500" style="border: 1px solid green"></canvas>
-  <canvas id="buffer-canvas" width="1000" height="500" style="visibility: hidden"></canvas>
+  <canvas id="buffer-canvas" width="1000" height="500" style={debug ?  "" : 'visibility: "none"'}></canvas>
 
   <button id="canvasDragger" class="dragger" style="position: absolute; top: 500px; left: 1000px; width: 20px; height: 20px; border-radius: 100%"></button>
 </div>

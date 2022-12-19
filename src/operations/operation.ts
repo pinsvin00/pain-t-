@@ -14,7 +14,7 @@ export class Operation {
         
     }
     
-    draw(painter: Painter) {
+    drawWith(painter: Painter) {
         painter.color = this.color;
         painter.fill = this.fill;
         painter.thickness = this.thickness;
@@ -23,7 +23,24 @@ export class Operation {
 
 
 
-export class Circle { 
+export class ImagePaste extends  Operation{
+    imageData: ImageData;
+    position: Vector2;
+
+    constructor(pos: Vector2, imageData: ImageData) {
+        super();
+        this.imageData = imageData;
+        this.position = pos;
+    }
+
+    drawWith(painter: Painter) {
+        super.drawWith(painter);
+        painter.ctx.putImageData(this.imageData, this.position.x, this.position.y);
+    }
+}
+
+
+export class Circle {
     position: Vector2;
     radius: number;
     color: string;
@@ -70,9 +87,9 @@ export class LineOperation extends Operation {
         this.endPoint = null;
     }
 
-    draw(painter: Painter) {
+    drawWith(painter: Painter) {
         if(!this.startPoint || !this.endPoint) return;
-        super.draw(painter);
+        super.drawWith(painter);
         painter.line(this.startPoint, this.endPoint, 2.0);
     }
 }
@@ -87,9 +104,9 @@ export class RectOperation extends Operation {
         this.endPoint = null;
     }
 
-    draw(painter: Painter) {
+    drawWith(painter: Painter) {
         if(!this.startPoint || !this.endPoint) return;
-        super.draw(painter);
+        super.drawWith(painter);
         painter.rect(this.startPoint, this.endPoint, 2.0);
     }
 }
@@ -104,9 +121,9 @@ export class EllipseOperation extends Operation {
         this.radius = new Vector2(0,0);
     }
 
-    draw(painter: Painter) {
+    drawWith(painter: Painter) {
         painter.color = this.color;
-        super.draw(painter);
+        super.drawWith(painter);
         painter.ellipse(this.startPoint, this.radius);
     }
 }
@@ -114,7 +131,7 @@ export class EllipseOperation extends Operation {
 export class DrawOperation extends Operation { 
     circles : Array<Circle> = [];
 
-    draw(painter: Painter) {
+    drawWith(painter: Painter) {
         this.circles.forEach(el => {
             painter.color = el.color;
             painter.circle(el.position, el.radius, false);

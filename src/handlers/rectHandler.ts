@@ -2,6 +2,7 @@ import { LineOperation, RectOperation } from "../operations/operation";
 import { Vector2 } from "../utils";
 import { DrawingHandler } from "./drawingHandler";
 import { OperationHandler } from "./operationHandler";
+import {ctxBuffer} from "../paint/bufferCanvasProvider";
 
 
 
@@ -26,6 +27,9 @@ export class RectHandler extends OperationHandler {
         if(!this.mousePressed) {
             return;
         }
+
+        this.layer.loadOntoBuffer();
+
         const pos = this.transformer.transform(e);
 
         if(this.proportional) {
@@ -36,13 +40,13 @@ export class RectHandler extends OperationHandler {
         else {
             this.rectangle.endPoint = pos;
         }
-
-        this.layer.drawCurrentOperation();
+        //nie rysuje sie to co jest aktualnie widoczne
+        this.layer.currentOperation.drawWith(this.layer.bufferPainter);
     }
 
     onRelease(e: MouseEvent) {
         this.layer.operations.push(this.rectangle);
-        this.layer.saveGeneratedImage();
+        this.layer.saveFromBuffer();
         super.onRelease(e);
     }
 

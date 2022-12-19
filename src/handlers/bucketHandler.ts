@@ -16,8 +16,8 @@ export class BucketHandler extends OperationHandler {
         this.layer.currentOperation = bucket
         this.layer.operations.push(bucket);
 
-        this.layer.drawCurrentOperation();
-        this.layer.saveGeneratedImage();
+        this.layer.currentOperation.drawWith(this.layer.bufferPainter);
+        this.layer.saveFromBuffer();
     }
 
 }
