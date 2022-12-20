@@ -77,6 +77,15 @@ export class Vector2 {
 	}
 }
 
+export function getRectVertices(a: Vector2, b: Vector2) {
+	return [
+		new Vector2(a.x, b.y),
+		b,
+		new Vector2(b.x, a.y),
+		a
+	]
+}
+
 export function generateUUID() {
 	var d = new Date().getTime(); //Timestamp
 	var d2 =
@@ -99,11 +108,10 @@ export function generateUUID() {
 	});
 }
 
-export function vectorsByModule(v1: Vector2, v2: Vector2) {
-	const root = new Vector2(0, 0);
-	if (v1.dis(root) > v2.dis(root)) {
-		return [v1, v2];
-	} else {
-		return [v2, v1];
-	}
+export function vectorsByModule(arr : Array<Vector2>) {
+	const root = new Vector2(0,0);
+	let sorted = arr.sort((a,b) => {
+		return a.dis(root) - b.dis(root);
+	})
+	return sorted;
 }

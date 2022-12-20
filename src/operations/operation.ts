@@ -39,6 +39,22 @@ export class ImagePaste extends  Operation{
     }
 }
 
+export class TextOperation extends  Operation{
+    text: Text;
+    startPoint: Vector2;
+    endPoint: Vector2;
+
+    constructor(pos: Vector2, imageData: ImageData) {
+        super();
+
+    }
+
+    drawWith(painter: Painter) {
+        super.drawWith(painter);
+    }
+}
+
+
 
 export class Circle {
     position: Vector2;

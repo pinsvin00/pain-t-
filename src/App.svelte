@@ -45,8 +45,9 @@
   <button on:click={() => {select(DrawingMode.LINE)}}>Linia</button>
   <button on:click={() => {select(DrawingMode.RECTANGLE)}}>Prostokąt</button>
   <button on:click={() => {select(DrawingMode.CIRLCE)}}>Koło</button>
-  <button on:click={() => {select(DrawingMode.BRUSH)}}>brush</button> 
+  <button on:click={() => {select(DrawingMode.BRUSH)}}>Brush</button>
   <button on:click={() => {select(DrawingMode.BUCKET)}}>Fill</button>
+  <button on:click={() => {select(DrawingMode.TEXT)}}>Tekst</button>
 
   <button style="margin-left: 1rem" on:click={() => {select(DrawingMode.SELECT)}}>Wybierak</button>
   <button on:click={() => {select(DrawingMode.CUTTER)}}>Wycinak</button>
@@ -161,6 +162,8 @@
           <button on:click={() => {modal.changeVisibility()}}>Zamknij</button>
         </div>
       </ModalWindow>
+
+      <span>Aktualna nazwa warstwy : {paint.selectedLayer.name}</span>
 
 
   {/if}

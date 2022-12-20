@@ -28,12 +28,10 @@ export class Layer {
     size: Vector2;
     lastMouseEvent: Vector2;
 
-
     operations: Array<Operation> = [];
     currentOperation: Operation;
 
     name = "Warstwa obrazu";
-
     controlPressed = false;
 
     imageData: ImageData;

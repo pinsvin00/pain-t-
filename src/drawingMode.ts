@@ -8,4 +8,5 @@ export enum DrawingMode {
     BUCKET,
     SELECT,
     CUTTER,
+    TEXT,
 }

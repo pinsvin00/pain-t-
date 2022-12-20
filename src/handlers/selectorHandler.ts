@@ -1,123 +1,76 @@
-import { generateUUID, pxToInt, Vector2, vectorsByModule } from "../utils";
+import type { RectOperation } from "../operations/operation";
+import { generateUUID, Vector2, vectorsByModule, getRectVertices } from "../utils";
 import { OperationHandler } from "./operationHandler";
 import { ctxBuffer, guiLayer } from "../paint/bufferCanvasProvider";
 import type { Paint } from "../paint/paint";
-import { HTMLDragger } from "../Dragger";
-
-const addDragger = (rect: HTMLElement, pos: Vector2) => {
-	const draggerUUID = generateUUID();
-	const draggerIco = document.createElement("button");
-	draggerIco.id = draggerUUID;
-	draggerIco.style.borderRadius = "100%";
-	draggerIco.style.position = "relative";
-
-    
-	draggerIco.style.top = pxToInt(rect.style.height) - 10 + "px";
-	draggerIco.style.left = pxToInt(rect.style.width) - 5 + "px ";
-
-	draggerIco.style.width = "10px";
-	draggerIco.style.height = "10px";
-
-	rect.appendChild(draggerIco);
-
-	draggerIco.setAttribute("class", "dragger");
-
-	const dragger = new HTMLDragger(draggerUUID, [rect.id]);
-	console.log(draggerIco);
-	rect.appendChild(draggerIco);
-
-	return draggerIco;
-};
-
-class HTMLDivRect {
-	isResizible = false;
-	staticCSS = "";
-
-	constructor(is_resizible = false, style = "") {
-		this.staticCSS = style;
-		this.isResizible = is_resizible;
-	}
-
-	getRect(v1: Vector2, v2: Vector2) {
-		const rect = document.createElement("div");
-		rect.style.position = "relative";
-		const rectUUID = generateUUID();
-		rect.id = rectUUID;
-		let start, end;
-		[start, end] = vectorsByModule(v1, v2);
-
-		let diff = end.sub(start);
-
-		rect.style.top = start.y + "px";
-		rect.style.left = start.x + "px";
-
-		rect.style.width = diff.x + "px";
-		rect.style.height = diff.y + "px";
-
-		rect.style.border = "3px solid blue";
-		rect.style.backgroundColor = "rgba(1,34,255,0.44)";
-		rect.style.borderStyle = "dashed";
-
-		return rect;
-	}
-}
+import { addDragger, HTMLRect } from "../ui/HTMLRect";
 
 export class SelectorHandler extends OperationHandler {
-	selectionDiv: HTMLElement;
-	draggerDiv: HTMLElement;
+  rectangle: RectOperation;
+  selectionDiv: HTMLElement;
+  draggerDiv: HTMLElement;
 
-	startPoint: Vector2;
-	lastPosition: Vector2;
-	cut = false;
+  currentPoint: Vector2;
+  startPoint: Vector2;
 
-	constructor(paint: Paint, cut: boolean) {
-		super(paint);
-		this.cut = cut;
-	}
+  cut = false;
 
-	onPress(e: MouseEvent): void {
-		super.onPress(e);
+  constructor(paint: Paint, cut: boolean) {
+    super(paint);
+    this.cut = cut;
+  }
 
-		this.layer.selectionStart = null;
-		this.layer.selectionEnd = null;
+  onPress(e: MouseEvent): void {
+    super.onPress(e);
 
-		if (this.selectionDiv) {
-			this.selectionDiv.remove();
-		}
+    this.layer.selectionStart = null;
+    this.layer.selectionEnd = null;
 
-		this.startPoint = this.transformer.transform(e);
-		console.log(this.startPoint);
-		const selectionDivReference = new HTMLDivRect(
-			true,
-			"border: 1px solid blue"
-		);
+    if (this.selectionDiv) {
+      this.selectionDiv.remove();
+      this.selectionDiv = null;
+      return;
+    }
 
-		this.selectionDiv = selectionDivReference.getRect(
-			this.startPoint,
-			this.startPoint
-		);
-		guiLayer.appendChild(this.selectionDiv);
-	}
+    this.startPoint = this.transformer.transform(e);
+    const selectionDivReference = new HTMLRect();
 
-	onMove(e: MouseEvent): void {
-		if (!this.mousePressed) {
-			return;
-		}
+    this.selectionDiv = selectionDivReference.getRect(this.startPoint, this.startPoint);
 
-		this.lastPosition = this.transformer.transform(e);
-		const diff = this.lastPosition.sub(this.startPoint);
+    let pressPoint = new Vector2(this.startPoint.x, this.startPoint.y);
+    this.selectionDiv.onmousedown = (e) => {
+      pressPoint = new Vector2(this.startPoint.x, this.startPoint.y);
+    };
 
-		this.selectionDiv.style.top = this.lastPosition.y + "px";
-		this.selectionDiv.style.left = this.lastPosition.x + "px";
+    guiLayer.appendChild(this.selectionDiv);
+  }
 
-		this.selectionDiv.style.width = diff.x + "px";
-		this.selectionDiv.style.height = diff.y + "px";
+  onMove(e: MouseEvent): void {
+    if (!this.mousePressed) {
+      return;
+    }
 
-	}
+    this.currentPoint = this.transformer.transform(e);
+    let verts = getRectVertices(this.currentPoint, this.startPoint);
+    let lt = vectorsByModule(verts)[0];
+    let rb = vectorsByModule(verts)[3];
 
-	onRelease(e: MouseEvent) {
-		this.layer.selectionStart = this.startPoint;
-		this.layer.selectionEnd = this.lastPosition;
-		super.onRelease(e);
-	}
+    this.selectionDiv.style.left = lt.x + "px";
+    this.selectionDiv.style.top = lt.y + "px";
+
+    const rectSize = rb.sub(lt);
+
+    this.selectionDiv.style.width = rectSize.x + "px";
+    this.selectionDiv.style.height = rectSize.y + "px";
+  }
+
+  onRelease(e: MouseEvent) {
+    this.currentPoint = this.transformer.transform(e);
+    let verts = getRectVertices(this.currentPoint, this.startPoint);
+    this.startPoint = vectorsByModule(verts)[0];
+    this.currentPoint = vectorsByModule(verts)[3];
+
+    this.draggerDiv = addDragger(this.selectionDiv, this.currentPoint);
+    super.onRelease(e);
+  }
 }
