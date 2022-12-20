@@ -37,6 +37,7 @@
         background-color: aliceblue;
         width: 50%;
         padding: 1rem;
+        z-index: 22;
 
         border-radius: 30px;
     }

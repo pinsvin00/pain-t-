@@ -46,6 +46,7 @@ export class Paint {
 		let items = e.clipboardData.items;
 
 		if (this.localCopiedImage && this.preferLocalOverExternal) {
+            console.log(this.localCopiedImage);
 			this.selectedLayer.pasteImg(this.localCopiedImage);
 			return;
 		}
@@ -124,6 +125,7 @@ export class Paint {
 		const fill = this.handler.fill;
 		const color = this.handler.color;
 
+        this.onToolChange();
 		this.handler = this.provideHandler(mode);
 		this.handler.paint = this;
 		this.handler.fill = fill;
@@ -150,8 +152,26 @@ export class Paint {
 			dummy.setAttribute("href", data);
 			dummy.setAttribute("download", "image.png");
 			dummy.click();
-		}
+		} else if(e.key.toUpperCase() === "C" && this.controlPressed) {
+            if(this.selectedLayer.selectionStart) {
+                this.selectedLayer.loadOntoBuffer();
+                let bufferCtx : CanvasRenderingContext2D = ctxBuffer;
+                
+                let diff = this.selectedLayer.selectionEnd.sub(this.selectedLayer.selectionStart);
+                this.localCopiedImage = bufferCtx.getImageData(
+                    this.selectedLayer.selectionStart.x, this.selectedLayer.selectionStart.y,
+                    diff.x, diff.y
+                )
+            } 
+        }
 	}
+
+    onToolChange() {
+        if(this.selectedLayer) {
+            this.selectedLayer.selectionStart = null;
+            this.selectedLayer.selectionEnd = null;
+        }
+    }
 
 	handleKeyUp(e: KeyboardEvent) {
 		console.log(e.key, "Key released");
@@ -185,7 +205,6 @@ export class Paint {
 
 	createCanvas() {
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
 		for (let layer of this.layers) {
 			if (layer === this.selectedLayer) {
 				let data = ctxBuffer.getImageData(

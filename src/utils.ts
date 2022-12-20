@@ -15,6 +15,10 @@ export class MouseTransformer {
 	}
 }
 
+export function pxToInt(str: string) {
+	return parseInt(str.split("px")[0]);
+}
+
 export function _2dArray(w: number, h: number): Array<Array<boolean>> {
 	const ret = [];
 	for (let j = 0; j < w; j++) {

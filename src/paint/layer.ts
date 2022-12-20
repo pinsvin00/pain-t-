@@ -18,6 +18,9 @@ export class Layer {
 
     visible = true;
 
+    selectionStart : Vector2;
+    selectionEnd : Vector2;
+
     painter: CanvasPainter;
     bufferPainter: CanvasPainter;
 

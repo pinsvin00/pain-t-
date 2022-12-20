@@ -29,7 +29,6 @@ export class RectHandler extends OperationHandler {
         }
 
         this.layer.loadOntoBuffer();
-
         const pos = this.transformer.transform(e);
 
         if(this.proportional) {
@@ -40,7 +39,7 @@ export class RectHandler extends OperationHandler {
         else {
             this.rectangle.endPoint = pos;
         }
-        //nie rysuje sie to co jest aktualnie widoczne
+
         this.layer.currentOperation.drawWith(this.layer.bufferPainter);
     }
 

@@ -1,4 +1,5 @@
 import type { Paint } from "./paint/paint";
+import { pxToInt } from "./utils";
 
 export class HTMLDragger {
 	element: HTMLElement;
@@ -11,9 +12,11 @@ export class HTMLDragger {
 	boundMouseUp: any;
 
 	onMouseMove(e: MouseEvent) {
-		this.subjects.forEach((subject) => {
-			subject.setAttribute("width", e.clientX + "px");
-			subject.setAttribute("height", e.clientY + "px");
+
+
+		this.subjects.forEach((subject) => {			
+			subject.style.width =  e.clientX + "px";
+			subject.style.height = e.clientY + "px";
 		});
 
 		this.element.style.setProperty("left", e.clientX + "px");
@@ -28,11 +31,12 @@ export class HTMLDragger {
 	}
 
 	onMouseDown(e: MouseEvent) {
+		e.preventDefault();
+		e.stopPropagation();
 		this.boundMouseUp = this.onMouseUp.bind(this);
 		this.boundMouseMove = this.onMouseMove.bind(this);
 		document.addEventListener("mousemove", this.boundMouseMove);
 		document.addEventListener("mouseup", this.boundMouseUp);
-		e.preventDefault();
 	}
 
 	constructor(id: string, subjectIds: Array<string>) {

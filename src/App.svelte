@@ -143,10 +143,12 @@
                 layer.name = window.prompt("Podaj nową nazwę warstwy");
               }}>Edytuj</button>
 
-              <button style="margin-left: 2rem;" on:click={() => {
+              <button style="margin-left: 2rem;" on:click={ async () => {
+                paint.selectedLayer.saveFromBuffer();
                 paint.selectedLayer = layer;
                 paint.handler.layer = layer;
-                ctxBuffer.clearRect(0,0, canvasBuffer.width, canvasBuffer.height);
+                paint.selectedLayer.loadOntoBuffer();
+                //ctxBuffer.clearRect(0,0, canvasBuffer.width, canvasBuffer.height);
               }}>Wybierz</button>
 
 
@@ -170,7 +172,6 @@
 
 <div>
   <div id="gui-layer"></div>
-  <!-- <div style="width: 1000px; height: 500px">cockertonnn</div> -->
   <canvas id="canvas" width="1000" height="500" style="border: 1px solid green"></canvas>
   <canvas id="buffer-canvas" width="1000" height="500" style={debug ?  "" : 'visibility: "none"'}></canvas>
 

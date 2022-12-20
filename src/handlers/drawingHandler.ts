@@ -5,8 +5,6 @@ import { OperationHandler } from "./operationHandler";
 
 export class DrawingHandler extends OperationHandler {
     generatedOperation: DrawOperation;
-
-
     onPress(e: MouseEvent) : void {
         super.onPress(e);
         this.generatedOperation = new DrawOperation();
