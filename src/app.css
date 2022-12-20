@@ -1,0 +1,35 @@
+body {
+	margin: 0;
+	padding: 0;
+	color: pink;
+}
+
+.dragger:hover {
+	cursor: pointer;
+	z-index: 3;
+	color: red;
+}
+
+canvas:hover {
+	cursor: crosshair;
+}
+canvas {
+	background-image: url("static/smol_mesh.png");
+	background-repeat: repeat;
+}
+
+.interactive:hover {
+	color: red;
+	cursor: pointer;
+}
+
+.ml-3 {
+	margin-left: 3rem;
+}
+
+#gui-layer {
+	position: absolute;
+	opacity: 1;
+	width: 1000px;
+	height: 500px;
+}

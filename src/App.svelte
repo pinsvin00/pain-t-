@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { CanvasDragger } from './Dragger';
+  import { HTMLDragger } from './Dragger';
   import { DrawingMode } from './drawingMode';
   import './app.css'
   import { Paint } from './paint/paint';
@@ -11,7 +11,7 @@
   import {canvasBuffer, ctxBuffer} from "./paint/bufferCanvasProvider.js";
 
   let paint : Paint;
-  let dragger : CanvasDragger;
+  let dragger : HTMLDragger;
   let modal: ModalWindow;
 
   let debug = true;
@@ -29,7 +29,7 @@
     }
 
     window.requestAnimationFrame(frameCallback);
-    dragger = new CanvasDragger("canvasDragger", ["canvas", "buffer-canvas"]);
+    dragger = new HTMLDragger("canvasDragger", ["canvas", "buffer-canvas", ]);
 
   })
 
@@ -40,37 +40,6 @@
 
 
 </script>
-
-<style>
-  body {
-    margin: 0;
-    padding: 0;
-    color: pink;
-  }
-
-  .dragger:hover {
-    cursor: pointer;
-    color: red;
-  }
-
-  canvas:hover { 
-    cursor : crosshair;
-  }
-  canvas {
-    background-image: url("static/smol_mesh.png");
-    background-repeat: repeat;
-  }
-
-  .interactive:hover {
-    color: red;
-    cursor: pointer;
-  }
-
-  .ml-3 { 
-    margin-left: 3rem;
-  }
-
-</style>
 
 <div>
   <button on:click={() => {select(DrawingMode.LINE)}}>Linia</button>
@@ -97,7 +66,7 @@
   <br>
   {#if debug}
     <div>
-      <button on:click={() => { paint.drawCanvas() }}>DEBUG: NARYSUJ PONOWNIE</button>
+      <button on:click={() => { paint.createCanvas() }}>DEBUG: NARYSUJ PONOWNIE</button>
       <button on:click={() => {
         paint.layers.forEach(el=> console.log(el));
         }}>DEBUG: WYLOGUJ WSZYSTKIE WARSTWY</button>
@@ -200,6 +169,8 @@
 </div>
 
 <div>
+  <div id="gui-layer"></div>
+  <!-- <div style="width: 1000px; height: 500px">cockertonnn</div> -->
   <canvas id="canvas" width="1000" height="500" style="border: 1px solid green"></canvas>
   <canvas id="buffer-canvas" width="1000" height="500" style={debug ?  "" : 'visibility: "none"'}></canvas>
 

@@ -1,57 +1,58 @@
 import type { Paint } from "./paint/paint";
 
+export class HTMLDragger {
+	element: HTMLElement;
+	paint: Paint;
+	subjects: Array<HTMLElement> = [];
 
-export class CanvasDragger {
+	active = false;
 
-    element: HTMLElement;
-    paint: Paint;
-    subjects: Array<HTMLElement> = [];
+	boundMouseMove: any;
+	boundMouseUp: any;
 
-    active = false;
+	onMouseMove(e: MouseEvent) {
+		this.subjects.forEach((subject) => {
+			subject.setAttribute("width", e.clientX + "px");
+			subject.setAttribute("height", e.clientY + "px");
+		});
 
-    boundMouseMove: any;
-    boundMouseUp: any;
+		this.element.style.setProperty("left", e.clientX + "px");
+		this.element.style.setProperty("top", e.clientY + "px");
+		e.preventDefault();
+	}
 
-    onMouseMove(e: MouseEvent) { 
-        this.subjects.forEach(subject => {
-            subject.setAttribute("width", e.clientX + "px");
-            subject.setAttribute("height", e.clientY + "px");
-        })
+	onMouseUp(e: MouseEvent) {
+		document.removeEventListener("mousemove", this.boundMouseMove);
+		document.removeEventListener("mouseup", this.boundMouseUp);
+		e.preventDefault();
+	}
 
-        this.element.style.setProperty("left", e.clientX + "px");
-        this.element.style.setProperty("top", e.clientY + "px");
-    }
+	onMouseDown(e: MouseEvent) {
+		this.boundMouseUp = this.onMouseUp.bind(this);
+		this.boundMouseMove = this.onMouseMove.bind(this);
+		document.addEventListener("mousemove", this.boundMouseMove);
+		document.addEventListener("mouseup", this.boundMouseUp);
+		e.preventDefault();
+	}
 
-    onMouseUp() {
-        console.log("cockerton")
-        document.removeEventListener('mousemove', this.boundMouseMove);
-        document.removeEventListener('mouseup', this.boundMouseUp);
-    }
+	constructor(id: string, subjectIds: Array<string>) {
+		this.element = document.getElementById(id);
 
-    onMouseDown() {
-        this.boundMouseUp = this.onMouseUp.bind(this);
-        this.boundMouseMove = this.onMouseMove.bind(this);
-        document.addEventListener('mousemove', this.boundMouseMove);
-        document.addEventListener('mouseup', this.boundMouseUp);
-    }
+		subjectIds.forEach((subjectId) => {
+			const domEl = document.getElementById(subjectId);
+			this.subjects.push(domEl);
+		});
+		if (this.element === null) {
+			console.error(
+				`Couldnt find element or subject\n element ${this.element} subjects ${this.subjects}`
+			);
+			return;
+		}
 
-    constructor(id: string, subjectIds : Array<string>) {
-        this.element = document.getElementById(id);
+		this.element.addEventListener("mousedown", (e) => {
+			this.onMouseDown(e);
+		});
+	}
 
-        subjectIds.forEach(subjectId => {
-            const domEl = document.getElementById(subjectId);
-            this.subjects.push(domEl);
-        })
-        if(this.element === null){
-            console.error(`Couldnt find element or subject\n element ${this.element} subjects ${this.subjects}`);
-            return;
-        }
-
-        this.element.addEventListener('mousedown', this.onMouseDown.bind(this));
-    }
-
-
-    detach() {
-
-    }
+	detach() {}
 }
