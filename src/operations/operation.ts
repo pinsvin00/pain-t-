@@ -40,17 +40,32 @@ export class ImagePaste extends  Operation{
 }
 
 export class TextOperation extends  Operation{
-    text: Text;
+    text: string;
     startPoint: Vector2;
     endPoint: Vector2;
+    font: string;
 
-    constructor(pos: Vector2, imageData: ImageData) {
+    constructor(text: string, font: string,startPoint: Vector2, endPoint: Vector2) {
         super();
-
+        this.text = text;
+        this.font = font;
+        this.startPoint = startPoint;
+        this.endPoint = endPoint;
     }
 
     drawWith(painter: Painter) {
         super.drawWith(painter);
+        const rectSize = this.endPoint.sub(this.startPoint);
+        let fontSize = rectSize.y;
+        const textSize = this.text.length * rectSize.y;
+
+        if(textSize > rectSize.x) {
+            fontSize = Math.floor(rectSize.x * 1.5 / this.text.length);
+        }
+
+        painter.ctx.font = fontSize + "px " + this.font;
+        painter.ctx.fillText(this.text, this.startPoint.x, this.startPoint.y + rectSize.y);
+
     }
 }
 

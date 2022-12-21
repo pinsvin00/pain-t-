@@ -14,11 +14,23 @@
   let dragger : HTMLDragger;
   let modal: ModalWindow;
 
-  let debug = true;
+  let debug = false;
+  const fontOptions = [
+          "Verdana",
+          "Arial",
+          "Courier",
+          "Impact",
+          "Comic Sans MS"
+  ]
+  const changeLayer = (layer: Layer) => {
+    paint.selectedLayer = layer;
+    paint.handler.layer = layer;
+  }
 
   onMount(() => {
     loadCanvasData();
     paint = new Paint();
+    paint.changeLayer = changeLayer;
     const frameCallback = () => {
       paint.createCanvas();
       window.requestAnimationFrame(frameCallback)
@@ -32,6 +44,8 @@
     dragger = new HTMLDragger("canvasDragger", ["canvas", "buffer-canvas", ]);
 
   })
+
+
 
   const select = (mode : DrawingMode) => {
     paint.setDrawingMode(mode);
@@ -86,6 +100,20 @@
       <input type="checkbox" bind:checked={paint.handler.fill}  />
       <span>kolorek</span>
       <input type="color" bind:value={paint.handler.color}>
+      <div>
+        <span>Czcionka</span>
+        <select style="margin-left: 1rem" bind:value={paint.font}>
+          {#each fontOptions as font}
+            <option value={font} style="font-family: {font}">
+              {font}
+            </option>
+          {/each}
+        </select>
+      </div>
+    <br>
+
+
+      <span>Aktualna nazwa warstwy : {paint.selectedLayer.name}</span>
 
       <ModalWindow bind:this={modal} >
         <div slot="header" style="margin-bottom: 2rem"> Informacje o warstwach </div>
@@ -108,7 +136,7 @@
               {#if paint.selectedLayer === layer}
                 <span style="margin-right: 3rem">✅</span>
               {:else}
-                <span style="margin-right: 3rem">💅</span>              
+                <span style="margin-right: 3rem">-</span>
               {/if}
 
               <span class="interactive ml-3" style="font-size: 25px;" on:mousedown={() => {
@@ -149,7 +177,6 @@
                 paint.selectedLayer = layer;
                 paint.handler.layer = layer;
                 paint.selectedLayer.loadOntoBuffer();
-                //ctxBuffer.clearRect(0,0, canvasBuffer.width, canvasBuffer.height);
               }}>Wybierz</button>
 
 
@@ -163,7 +190,7 @@
         </div>
       </ModalWindow>
 
-      <span>Aktualna nazwa warstwy : {paint.selectedLayer.name}</span>
+
 
 
   {/if}
@@ -176,7 +203,7 @@
 <div>
   <div id="gui-layer"></div>
   <canvas id="canvas" width="1000" height="500" style="border: 1px solid green"></canvas>
-  <canvas id="buffer-canvas" width="1000" height="500" style={debug ?  "" : 'visibility: "none"'}></canvas>
+  <canvas id="buffer-canvas" width="1000" height="500" style={debug ?  "" : 'visibility: hidden'}></canvas>
 
   <button id="canvasDragger" class="dragger" style="position: absolute; top: 500px; left: 1000px; width: 20px; height: 20px; border-radius: 100%"></button>
 </div>
