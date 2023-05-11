@@ -70,7 +70,10 @@ export class SelectorHandler extends OperationHandler {
     this.startPoint = vectorsByModule(verts)[0];
     this.currentPoint = vectorsByModule(verts)[3];
 
-    this.draggerDiv = addDragger(this.selectionDiv, this.currentPoint);
+    this.layer.selectionStart = this.startPoint;
+    this.layer.selectionEnd = this.currentPoint;
+
+    //this.draggerDiv = addDragger(this.selectionDiv, this.currentPoint);
     super.onRelease(e);
   }
 }

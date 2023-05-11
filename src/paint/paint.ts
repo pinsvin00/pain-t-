@@ -109,9 +109,8 @@ export class Paint {
 		map[DrawingMode.CIRLCE] = new CircleHandler(this);
 		map[DrawingMode.BUCKET] = new BucketHandler(this);
 		map[DrawingMode.SELECT] = new SelectorHandler(this, false);
-		map[DrawingMode.TEXT] = new TextHandler(this);
 		map[DrawingMode.CUTTER] = new SelectorHandler(this, true);
-
+		map[DrawingMode.TEXT] = new TextHandler(this);
 		return map[mode];
 	}
 
@@ -132,34 +131,53 @@ export class Paint {
 	async handleKeyDown(e: KeyboardEvent) {
 		if (e.key === "Control") {
 			this.controlPressed = true;
-		} else if (e.key === "Shift") {
+		}
+		else if (e.key === "Shift") 
+		{
 			this.handler.proportional = true;
-		} else if (e.key.toUpperCase() === "Z" && this.controlPressed) {
+		}
+		else if (e.key.toUpperCase() === "Z" && this.controlPressed) {
 			this.selectedLayer.operations.pop();
 			this.selectedLayer.generateImage();
 			this.createCanvas();
-		} else if (e.key.toUpperCase() === "S" && this.controlPressed) {
+		}
+		else if (e.key.toUpperCase() === "S" && this.controlPressed) 
+		{
 			e.preventDefault();
 			const dummy = document.getElementById("dummy");
 			const data = this.canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
 			dummy.setAttribute("href", data);
 			dummy.setAttribute("download", "image.png");
 			dummy.click();
-		} else if (e.key.toUpperCase() === "C" && this.controlPressed) {
-			if (this.selectedLayer.selectionStart) {
+		}
+		else if (e.key.toUpperCase() === "C" && this.controlPressed) 
+		{
+			console.log("sussy baka", this.selectedLayer.selectionStart);
+			if (this.selectedLayer.selectionStart) 
+			{
+
 				this.selectedLayer.loadOntoBuffer();
 				let bufferCtx: CanvasRenderingContext2D = ctxBuffer;
 
 				let diff = this.selectedLayer.selectionEnd.sub(this.selectedLayer.selectionStart);
 				this.localCopiedImage = bufferCtx.getImageData(this.selectedLayer.selectionStart.x, this.selectedLayer.selectionStart.y, diff.x, diff.y);
 			}
-		} else if (e.key === "ArrowUp" && this.controlPressed) {
+		}
+		else if(e.key.toUpperCase() === "V" && this.controlPressed) 
+		{	
+			if(this.preferLocalOverExternal)
+			{
+				this.selectedLayer.bufferCtx.putImageData(this.localCopiedImage, this.lastMousePos.x, this.lastMousePos.y)
+			}
+		}
+		else if (e.key === "ArrowUp" && this.controlPressed) {
 			try {
 				let layerIndex = this.layers.indexOf(this.selectedLayer);
 				this.changeLayer(this.layers[layerIndex - 1]);
 				e.preventDefault();
 			} catch {}
-		} else if (e.key === "ArrowDown" && this.controlPressed) {
+		}
+		else if (e.key === "ArrowDown" && this.controlPressed) {
 			try {
 				let layerIndex = this.layers.indexOf(this.selectedLayer);
 				this.changeLayer(this.layers[layerIndex + 1]);

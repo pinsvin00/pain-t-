@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { HTMLDragger } from './Dragger';
+  //import { HTMLDragger } from './Dragger';
   import { DrawingMode } from './drawingMode';
   import './app.css'
   import { Paint } from './paint/paint';
@@ -11,8 +11,30 @@
   import {canvasBuffer, ctxBuffer} from "./paint/bufferCanvasProvider.js";
 
   let paint : Paint;
-  let dragger : HTMLDragger;
+  //let dragger : HTMLDragger;
   let modal: ModalWindow;
+
+
+  document.onpaste = async (ev) => {
+    if(!paint.preferLocalOverExternal)
+    {
+      if(!ev.clipboardData?.items?.length) return
+      const {items} = ev.clipboardData
+      for(const item of items) 
+      {
+          if(!item.type.startsWith('image/')) continue
+          const file = item.getAsFile()!
+          const bitmap = await createImageBitmap(file)
+
+          // ...
+          if(paint.selectedLayer !== null)
+          {
+            paint.selectedLayer.bufferCtx.drawImage(bitmap, paint.lastMousePos.x, paint.lastMousePos.y, bitmap.width, bitmap.height);
+          }
+      }
+    }
+  }
+
 
   let debug = false;
   const fontOptions = [
@@ -41,7 +63,7 @@
     }
 
     window.requestAnimationFrame(frameCallback);
-    dragger = new HTMLDragger("canvasDragger", ["canvas", "buffer-canvas", ]);
+    //dragger = new HTMLDragger("canvasDragger", ["canvas", "buffer-canvas", ]);
 
   })
 
@@ -56,16 +78,16 @@
 </script>
 
 <div>
-  <button on:click={() => {select(DrawingMode.LINE)}}>Linia</button>
-  <button on:click={() => {select(DrawingMode.RECTANGLE)}}>Prostokąt</button>
-  <button on:click={() => {select(DrawingMode.CIRLCE)}}>Koło</button>
+  <button on:click={() => {select(DrawingMode.LINE)}}>Line</button>
+  <button on:click={() => {select(DrawingMode.RECTANGLE)}}>Rectangle</button>
+  <button on:click={() => {select(DrawingMode.CIRLCE)}}>Ellipse</button>
   <button on:click={() => {select(DrawingMode.BRUSH)}}>Brush</button>
   <button on:click={() => {select(DrawingMode.BUCKET)}}>Fill</button>
-  <button on:click={() => {select(DrawingMode.TEXT)}}>Tekst</button>
+  <button on:click={() => {select(DrawingMode.TEXT)}}>Text</button>
 
-  <button style="margin-left: 1rem" on:click={() => {select(DrawingMode.SELECT)}}>Wybierak</button>
-  <button on:click={() => {select(DrawingMode.CUTTER)}}>Wycinak</button>
-  <button on:click={() => {paint.localCopiedImage = null}}>Wyczyść lokalny obrazek</button>
+  <button style="margin-left: 1rem" on:click={() => {select(DrawingMode.SELECT)}}>Selector</button>
+  <button on:click={() => {select(DrawingMode.CUTTER)}}>Cutter</button>
+  <button on:click={() => {paint.localCopiedImage = null}}>Clean image stored in cache</button>
   {#if paint}
     <button on:click={() => {paint.preferLocalOverExternal = !paint.preferLocalOverExternal}}> { (
             paint.preferLocalOverExternal ? "local" : "external")  + " img paste"}
@@ -75,7 +97,7 @@
 
   <button style="margin-left: 1rem" on:click={() => {
     modal.changeVisibility();
-  }}>Warstwy</button>
+  }}>Layers</button>
 
   <br>
   <br>
@@ -94,14 +116,14 @@
 
 
   {#if paint}
-      <span>Thiccness : {paint.handler.thickness}</span>
+      <span>Thickness : {paint.handler.thickness}</span>
       <input type="range" min="1" max="10" bind:value={paint.handler.thickness}>
       <span>Fill(?)</span>
       <input type="checkbox" bind:checked={paint.handler.fill}  />
-      <span>kolorek</span>
+      <span>Color</span>
       <input type="color" bind:value={paint.handler.color}>
       <div>
-        <span>Czcionka</span>
+        <span>Font</span>
         <select style="margin-left: 1rem" bind:value={paint.font}>
           {#each fontOptions as font}
             <option value={font} style="font-family: {font}">
@@ -113,10 +135,10 @@
     <br>
 
 
-      <span>Aktualna nazwa warstwy : {paint.selectedLayer.name}</span>
+      <span>Current Layer : {paint.selectedLayer.name}</span>
 
       <ModalWindow bind:this={modal} >
-        <div slot="header" style="margin-bottom: 2rem"> Informacje o warstwach </div>
+        <div slot="header" style="margin-bottom: 2rem"> Layer info </div>
         <div slot="content" style="margin-bottom: 2rem">
           <button style="margin-bottom: 1rem; margin-top: 1rem" on:click={() => {
 
@@ -128,7 +150,7 @@
             paint.layers.push(layer);
             paint.layers = paint.layers;
 
-          }}>Dodaj warstwę</button>
+          }}>Add layer</button>
 
           {#each paint.layers as layer, i }
             <div style="display: flex; margin-bottom: 1rem">
@@ -167,17 +189,17 @@
                 }
 
                 paint.layers = paint.layers;
-              }}>Usuń</button>
+              }}>Delete</button>
               <button style="margin-left: 2rem;" on:click={() => {
                 layer.name = window.prompt("Podaj nową nazwę warstwy");
-              }}>Edytuj</button>
+              }}>Edit name</button>
 
               <button style="margin-left: 2rem;" on:click={ async () => {
                 paint.selectedLayer.saveFromBuffer();
                 paint.selectedLayer = layer;
                 paint.handler.layer = layer;
                 paint.selectedLayer.loadOntoBuffer();
-              }}>Wybierz</button>
+              }}>Select</button>
 
 
             </div>
@@ -186,7 +208,7 @@
 
         </div>
         <div slot="footer">
-          <button on:click={() => {modal.changeVisibility()}}>Zamknij</button>
+          <button on:click={() => {modal.changeVisibility()}}>Close</button>
         </div>
       </ModalWindow>
 
@@ -205,6 +227,5 @@
   <canvas id="canvas" width="1000" height="500" style="border: 1px solid green"></canvas>
   <canvas id="buffer-canvas" width="1000" height="500" style={debug ?  "" : 'visibility: hidden'}></canvas>
 
-  <button id="canvasDragger" class="dragger" style="position: absolute; top: 500px; left: 1000px; width: 20px; height: 20px; border-radius: 100%"></button>
+  <!-- <button id="canvasDragger" class="dragger" style="position: absolute; top: 500px; left: 1000px; width: 20px; height: 20px; border-radius: 100%"></button> -->
 </div>
-
