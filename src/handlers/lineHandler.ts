@@ -40,7 +40,7 @@ export class LineHandler extends OperationHandler {
             this.operation.endPoint = pos;
         }
 
-        this.layer.currentOperation.drawWith(this.layer.bufferPainter); //narysuj na bufor
+        this.layer.currentOperation.drawWith(this.layer.bufferPainter); // draw onto buffer
     }
 
     onRelease(e: MouseEvent) {

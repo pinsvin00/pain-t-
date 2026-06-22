@@ -21,7 +21,6 @@ export const addDragger = (rect: HTMLElement, pos: Vector2) => {
     draggerIco.setAttribute("class", "dragger");
 
     const dragger = new HTMLDragger(draggerUUID, [rect.id]);
-    console.log(draggerIco);
     rect.appendChild(draggerIco);
 
     return draggerIco;

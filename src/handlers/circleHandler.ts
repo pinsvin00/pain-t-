@@ -40,7 +40,7 @@ export class CircleHandler extends OperationHandler {
 
 
         this.lastMouseEvent = e;
-        this.layer.currentOperation.drawWith(this.layer.bufferPainter); //narysuj na bufor
+        this.layer.currentOperation.drawWith(this.layer.bufferPainter); // draw onto buffer
 
     }
 

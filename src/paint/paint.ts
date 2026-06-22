@@ -43,7 +43,6 @@ export class Paint {
 		let items = e.clipboardData.items;
 
 		if (this.localCopiedImage && this.preferLocalOverExternal) {
-			console.log(this.localCopiedImage);
 			this.selectedLayer.pasteImg(this.localCopiedImage);
 			return;
 		}
@@ -152,8 +151,7 @@ export class Paint {
 		}
 		else if (e.key.toUpperCase() === "C" && this.controlPressed) 
 		{
-			console.log("sussy baka", this.selectedLayer.selectionStart);
-			if (this.selectedLayer.selectionStart) 
+			if (this.selectedLayer.selectionStart)
 			{
 
 				this.selectedLayer.loadOntoBuffer();
@@ -197,7 +195,6 @@ export class Paint {
 	}
 
 	handleKeyUp(e: KeyboardEvent) {
-		console.log(e.key, "Key released");
 		if (e.key === "Control") {
 			this.controlPressed = false;
 		}

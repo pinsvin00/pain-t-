@@ -22,11 +22,6 @@ export class Painter {
         this.ctx.lineWidth = this.thickness;
     }
 
-    show() {
-        const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height).data;
-        console.log(imageData);
-    }
-
     circle(pos: Vector2, radius: number, fill = true) {
         this.reloadCanvasData();
 

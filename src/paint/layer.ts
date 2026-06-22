@@ -31,7 +31,7 @@ export class Layer {
     operations: Array<Operation> = [];
     currentOperation: Operation;
 
-    name = "Warstwa obrazu";
+    name = "Image layer";
     controlPressed = false;
 
     imageData: ImageData;

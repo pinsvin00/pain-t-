@@ -1,39 +1,15 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  //import { HTMLDragger } from './Dragger';
   import { DrawingMode } from './drawingMode';
   import './app.css'
   import { Paint } from './paint/paint';
   import ModalWindow from './components/ModalWindow.svelte';
   import { Layer } from './paint/layer';
-  import {MouseTransformer, Vector2} from './utils';
-  import {canvas, loadCanvasData} from './paint/bufferCanvasProvider';
-  import {canvasBuffer, ctxBuffer} from "./paint/bufferCanvasProvider.js";
+  import { Vector2 } from './utils';
+  import { loadCanvasData } from './paint/bufferCanvasProvider';
 
   let paint : Paint;
-  //let dragger : HTMLDragger;
   let modal: ModalWindow;
-
-
-  document.onpaste = async (ev) => {
-    if(!paint.preferLocalOverExternal)
-    {
-      if(!ev.clipboardData?.items?.length) return
-      const {items} = ev.clipboardData
-      for(const item of items) 
-      {
-          if(!item.type.startsWith('image/')) continue
-          const file = item.getAsFile()!
-          const bitmap = await createImageBitmap(file)
-
-          // ...
-          if(paint.selectedLayer !== null)
-          {
-            paint.selectedLayer.bufferCtx.drawImage(bitmap, paint.lastMousePos.x, paint.lastMousePos.y, bitmap.width, bitmap.height);
-          }
-      }
-    }
-  }
 
 
   let debug = false;
@@ -63,8 +39,6 @@
     }
 
     window.requestAnimationFrame(frameCallback);
-    //dragger = new HTMLDragger("canvasDragger", ["canvas", "buffer-canvas", ]);
-
   })
 
 
@@ -103,13 +77,13 @@
   <br>
   {#if debug}
     <div>
-      <button on:click={() => { paint.createCanvas() }}>DEBUG: NARYSUJ PONOWNIE</button>
+      <button on:click={() => { paint.createCanvas() }}>DEBUG: Redraw</button>
       <button on:click={() => {
-        paint.layers.forEach(el=> console.log(el));
-        }}>DEBUG: WYLOGUJ WSZYSTKIE WARSTWY</button>
+        paint.layers.forEach(el => console.log(el));
+        }}>DEBUG: Log all layers</button>
       <button on:click={() => {
         paint.selectedLayer.generateImage();
-        }}>DEBUG: STWÓRZ AKTUALNĄ WARSTWĘ </button>
+        }}>DEBUG: Regenerate current layer</button>
     </div>
     <br>
   {/if}
@@ -183,7 +157,7 @@
               <span class="ml-3">{layer.name}</span>
 
               <button style="margin-left: 2rem;" on:click={() => {
-                let confirmed = window.confirm("Czy napewno chcesz usunąć tą warstwę?");
+                let confirmed = window.confirm("Are you sure you want to delete this layer?");
                 if (confirmed) {
                   paint.layers.splice(i, 1);
                 }
@@ -191,7 +165,7 @@
                 paint.layers = paint.layers;
               }}>Delete</button>
               <button style="margin-left: 2rem;" on:click={() => {
-                layer.name = window.prompt("Podaj nową nazwę warstwy");
+                layer.name = window.prompt("Enter a new layer name");
               }}>Edit name</button>
 
               <button style="margin-left: 2rem;" on:click={ async () => {
@@ -226,6 +200,4 @@
   <div id="gui-layer"></div>
   <canvas id="canvas" width="1000" height="500" style="border: 1px solid green"></canvas>
   <canvas id="buffer-canvas" width="1000" height="500" style={debug ?  "" : 'visibility: hidden'}></canvas>
-
-  <!-- <button id="canvasDragger" class="dragger" style="position: absolute; top: 500px; left: 1000px; width: 20px; height: 20px; border-radius: 100%"></button> -->
 </div>
